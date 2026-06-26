@@ -1,2 +1,0 @@
-# Goldbookjournal
-journal
