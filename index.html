@@ -116,21 +116,6 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
 .pair-slash{font-family:var(--mono);font-size:16px;color:var(--text3);padding:9px 2px;align-self:flex-end;line-height:1.5}
 .pair-quote select{flex:0 0 100px;width:100px;border-radius:0 var(--r) var(--r) 0}
 
-/* ── SESSION BREAK CARD ── */
-.session-break-card{background:linear-gradient(135deg,rgba(55,122,221,0.08) 0%,rgba(201,162,39,0.04) 100%);border:1px solid rgba(55,122,221,0.2);border-radius:var(--r-lg);padding:16px;margin-bottom:10px;animation:fadeIn .2s ease}
-.session-break-card .card-title{color:var(--blue)}
-.session-pills{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.session-pill{flex:1;min-width:80px;padding:10px 6px;border:1px solid var(--border);border-radius:var(--r);background:var(--card2);color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .15s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
-.session-pill .sp-icon{font-size:16px}
-.session-pill .sp-time{font-size:9px;color:var(--text3);font-family:var(--mono)}
-.session-pill.tokyo.sel{background:rgba(155,143,232,0.12);border-color:#9B8FE8;color:#9B8FE8}
-.session-pill.tokyo.sel .sp-time{color:rgba(155,143,232,0.7)}
-.session-pill.london.sel{background:rgba(186,117,23,0.12);border-color:var(--amber);color:#E8A830}
-.session-pill.london.sel .sp-time{color:rgba(186,117,23,0.7)}
-.session-pill.nyc.sel{background:rgba(55,122,221,0.12);border-color:#378ADD;color:#7DAFED}
-.session-pill.nyc.sel .sp-time{color:rgba(55,122,221,0.7)}
-.sb-record-wrap{margin-top:4px}
-
 /* ── OUTCOME SELECTOR ── */
 .outcome-wrap{display:flex;gap:8px;margin-bottom:14px}
 .outcome-btn{flex:1;padding:13px 6px;border:1px solid var(--border);border-radius:var(--r);background:var(--card2);color:var(--text2);font-size:12px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
@@ -245,7 +230,7 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
 </head>
 <body>
 
-<!-- BOOT LOADING (shown briefly while we check your session) -->
+<!-- BOOT LOADING -->
 <div class="app hidden" id="boot-loading">
   <div class="auth-logo"><div class="logo">GoldBook</div></div>
 </div>
@@ -275,6 +260,7 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
   </div>
 </div>
 
+<!-- APP SHELL -->
 <div class="app hidden" id="app-shell">
 
   <!-- HEADER -->
@@ -315,6 +301,7 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
   <!-- ══ PAGE: LOG ══ -->
   <div id="page-log" class="page active">
 
+    <!-- Card 1: Session Info -->
     <div class="card">
       <div class="card-title">📅 Session Info</div>
       <div class="field-group">
@@ -357,8 +344,9 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
           </select>
         </div>
       </div>
-    </div>
+    </div><!-- /Card 1 -->
 
+    <!-- Card 2: Trade Setup -->
     <div class="card">
       <div class="card-title">📐 Trade Setup</div>
       <div class="field-group">
@@ -384,9 +372,11 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
           </select>
         </div>
       </div>
-    </div>
+    </div><!-- /Card 2 -->
 
-
+    <!-- Card 3: HTF / News / Notes -->
+    <div class="card">
+      <div class="card-title">🌐 Market Context</div>
       <div class="field-group">
         <div class="field"><label>HTF Trend (4H/Daily)</label>
           <select id="f-htf"><option value="">Select</option><option>Bullish</option><option>Bearish</option><option>Ranging</option></select>
@@ -400,8 +390,9 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
           <textarea id="f-notes" placeholder="e.g. 5:30 AM candle broke high → Fib 0.618 at OB zone → FVG below aligned with 4H 50 EMA..."></textarea>
         </div>
       </div>
-    </div>
+    </div><!-- /Card 3 -->
 
+    <!-- Card 4: Price Levels -->
     <div class="card">
       <div class="card-title">💰 Price Levels</div>
       <div class="field-group three">
@@ -418,8 +409,9 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
           <input type="number" id="f-actual-r" placeholder="+2.0 for win, -1 for full loss" step="0.1" inputmode="decimal">
         </div>
       </div>
-    </div>
+    </div><!-- /Card 4 -->
 
+    <!-- Card 5: Psychology -->
     <div class="card">
       <div class="card-title">🧠 Psychology</div>
       <div class="field-group one" style="margin-bottom:0">
@@ -438,7 +430,7 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
           </select>
         </div>
       </div>
-    </div>
+    </div><!-- /Card 5 -->
 
     <div class="section-label">Outcome</div>
     <div class="outcome-wrap">
@@ -450,7 +442,7 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
     <div class="err" id="err-msg"></div>
     <button class="btn-primary" onclick="addTrade()">Record Trade →</button>
     <button class="btn-secondary" onclick="clearForm()">Clear form</button>
-  </div>
+  </div><!-- /page-log -->
 
   <!-- ══ PAGE: JOURNAL ══ -->
   <div id="page-journal" class="page">
@@ -539,7 +531,7 @@ html,body{height:100%;background:var(--ink);color:var(--text1);font-family:var(-
     </div>
   </div>
 
-</div><!-- end .app -->
+</div><!-- /app-shell -->
 
 <!-- TRADE DETAIL MODAL -->
 <div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
@@ -568,9 +560,8 @@ let trades = [];
 let currentOutcome = '';
 let activeOutcomeFilter = '';
 let chartInstances = {};
-let authMode = 'login'; // 'login' | 'signup'
+let authMode = 'login';
 
-// Map a Supabase row → the camelCase trade object the rest of the app expects
 function rowToTrade(r){
   const s = v => (v===null || v===undefined) ? '—' : String(v);
   return {
@@ -582,7 +573,7 @@ function rowToTrade(r){
     htf: r.htf, news: r.news, psych: r.psych, outcome: r.outcome, notes: r.notes
   };
 }
-// Map an app trade object → a Supabase row ready to insert
+
 function tradeToRow(t){
   const n = v => (v===undefined || v===null || v==='—' || v==='') ? null : parseFloat(v);
   return {
@@ -600,7 +591,7 @@ async function loadTrades(){
   trades = (data || []).map(rowToTrade);
 }
 
-// ── AUTH SCREEN ──
+// ── AUTH ──
 function showAuthErr(msg){
   const el = document.getElementById('auth-err');
   el.textContent = msg;
@@ -690,7 +681,6 @@ async function enterApp(user){
   }
 })();
 
-
 // ── INIT ──
 (function init(){
   const today = new Date();
@@ -758,7 +748,7 @@ function showErr(msg){
   el.style.display = msg ? 'block' : 'none';
 }
 
-// ── SETUP → CANDLE WINDOW + SESSION BREAK ──
+// ── SETUP → CANDLE WINDOW ──
 const ASIA_WINDOWS = [
   'H1 · 2:30–3:30 AM IST',
   'H2 · 3:30–4:30 AM IST',
@@ -774,13 +764,11 @@ const LONDON_WINDOWS = [
   'H5 · 4:30–5:30 PM IST',
 ];
 
-
 function onSetupChange(val){
   const row = document.getElementById('candle-window-row');
   const sel = document.getElementById('f-candle-window');
   const lbl = document.getElementById('candle-window-label');
 
-  // Hide candle window by default
   row.style.display = 'none';
   sel.selectedIndex = 0;
 
@@ -806,11 +794,8 @@ function clearForm(){
   document.getElementById('rr-display').textContent = '—';
   document.getElementById('candle-window-row').style.display = 'none';
   document.getElementById('f-candle-window').selectedIndex = 0;
-  document.getElementById('session-break-card').style.display = 'none';
   currentOutcome = '';
-  currentSessionBreak = '';
   document.querySelectorAll('.outcome-btn').forEach(b=>b.classList.remove('sel'));
-  document.querySelectorAll('.session-pill').forEach(b=>b.classList.remove('sel'));
   showErr('');
 }
 
@@ -903,7 +888,7 @@ function renderJournal(){
   if(!filtered.length){ list.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
 
-  list.innerHTML = filtered.map((t,i)=>{
+  list.innerHTML = filtered.map((t)=>{
     const ar = parseFloat(t.actualR);
     const rClass = isNaN(ar)?'zero':ar>0?'pos':ar<0?'neg':'zero';
     const rStr = isNaN(ar)?t.actualR:(ar>0?'+':'')+ar.toFixed(1)+'R';
@@ -1047,7 +1032,7 @@ function renderStats(){
             y:{max:maxY,ticks:{color:tc,font:{size:9,family:'JetBrains Mono'}},grid:{color:grid}}}
   });
 
-  // Equity
+  // Equity curve
   const cumR=[]; let run=0;
   [...trades].reverse().forEach(t=>{const r=parseFloat(t.actualR);run+=(isNaN(r)?0:r);cumR.push(parseFloat(run.toFixed(2)));});
   mkChart('chart-equity','line',{
