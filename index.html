@@ -1,27 +1,44 @@
+
+
+Skip to content
+Using Gmail with screen readers
+1 of 7,183
+journal
+Inbox
+
+Aditya Sonawane
+Attachments
+4:45 PM (30 minutes ago)
+ 
+
+Aaryan Chavan
+Attachments
+5:12 PM (3 minutes ago)
+to me
+
+
+On Fri, Jul 10, 2026, 4:45 PM Aditya Sonawane <aditya0598sonawane@gmail.com> wrote:
+
+
+ 2 Attachments
+  •  Scanned by Gmail
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0B0D10">
-<title>GoldBook</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GoldBook Journal</title>
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR29sZEJvb2sgSm91cm5hbCIsInNob3J0X25hbWUiOiJHb2xkQm9vayIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMEIwRDEwIiwidGhlbWVfY29sb3IiOiIjMEIwRDEwIn0=">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-/* ===================================================================
-   THEME TOKENS — swap by setting data-theme on <html>.
-   "dark-gold" is the default/original look. Others are opt-in.
-=================================================================== */
-:root, [data-theme="dark-gold"]{
+:root{
   --bg:#0B0D10;
   --surface:#14171C;
   --surface-2:#1A1E24;
   --border:#242931;
-  --accent:#D4AF6A;
-  --accent-dim:#8A7245;
+  --gold:#D4AF6A;
+  --gold-dim:#8A7245;
   --green:#5FBF7A;
   --green-dim:#274A34;
   --red:#E5654A;
@@ -29,100 +46,37 @@
   --text:#EDEAE3;
   --text-mute:#8B8F98;
   --text-faint:#565B64;
-}
-[data-theme="midnight"]{
-  --bg:#0A0B14;
-  --surface:#12131F;
-  --surface-2:#191B29;
-  --border:#262A3E;
-  --accent:#7C9CF7;
-  --accent-dim:#3D4E8A;
-  --green:#5FBF9A;
-  --green-dim:#1F4A3E;
-  --red:#F0708C;
-  --red-dim:#5A2438;
-  --text:#E7E9F5;
-  --text-mute:#8B90AC;
-  --text-faint:#565A75;
-}
-[data-theme="emerald"]{
-  --bg:#08120E;
-  --surface:#0F1B15;
-  --surface-2:#15241C;
-  --border:#233A2D;
-  --accent:#4FD69C;
-  --accent-dim:#2A6E51;
-  --green:#7CE0A8;
-  --green-dim:#1F4A34;
-  --red:#E5825F;
-  --red-dim:#4A2C1F;
-  --text:#E7F3EC;
-  --text-mute:#89A296;
-  --text-faint:#4F6459;
-}
-[data-theme="paper"]{
-  --bg:#F4F1EA;
-  --surface:#FFFFFF;
-  --surface-2:#EDE9DF;
-  --border:#DCD5C4;
-  --accent:#A9782E;
-  --accent-dim:#C7A464;
-  --green:#2F8F5B;
-  --green-dim:#CFEBDA;
-  --red:#C24B34;
-  --red-dim:#F4D8D0;
-  --text:#211E17;
-  --text-mute:#6B6558;
-  --text-faint:#9B9484;
-}
-[data-theme="mono"]{
-  --bg:#0D0D0D;
-  --surface:#161616;
-  --surface-2:#1D1D1D;
-  --border:#2C2C2C;
-  --accent:#D8D8D8;
-  --accent-dim:#7A7A7A;
-  --green:#B7CBB0;
-  --green-dim:#33402F;
-  --red:#CFA6A6;
-  --red-dim:#402C2C;
-  --text:#EDEDED;
-  --text-mute:#8F8F8F;
-  --text-faint:#565656;
-}
-:root{
   --radius:10px;
   --mono:'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
   --serif:'Fraunces', 'Georgia', serif;
   --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  /* legacy aliases kept so nothing else needs renaming */
-  --gold:var(--accent);
-  --gold-dim:var(--accent-dim);
+}
+@font-face{
+  font-family:'Fraunces';
+  src:local('Georgia');
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%;}
 body{
   background:
-    radial-gradient(circle at 10% -10%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 40%),
+    radial-gradient(circle at 10% -10%, rgba(212,175,106,0.06), transparent 40%),
     var(--bg);
   color:var(--text);
   font-family:var(--sans);
   font-size:14px;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
-  transition:background .2s, color .2s;
 }
 ::-webkit-scrollbar{width:8px; height:8px;}
 ::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
 ::selection{background:var(--gold-dim); color:#fff;}
-button, .nav-item, .setup-radio, .emo-chip, .cal-cell, .auth-tab, select, .theme-swatch{-webkit-tap-highlight-color:transparent;}
 
 /* ---------- App shell ---------- */
 .app{display:flex; min-height:100vh;}
 
 /* Sidebar */
 .sidebar{
-  width:230px; flex-shrink:0;
+  width:220px; flex-shrink:0;
   background:var(--surface);
   border-right:1px solid var(--border);
   display:flex; flex-direction:column;
@@ -130,39 +84,32 @@ button, .nav-item, .setup-radio, .emo-chip, .cal-cell, .auth-tab, select, .theme
   transition:transform .25s ease;
 }
 .brand{
-  padding:20px 18px 14px;
+  padding:22px 20px 18px;
   display:flex; align-items:center; gap:10px;
   border-bottom:1px solid var(--border);
 }
 .brand-mark{
-  width:32px; height:32px; border-radius:8px;
-  background:linear-gradient(135deg, var(--accent), var(--accent-dim));
+  width:30px; height:30px; border-radius:8px;
+  background:linear-gradient(135deg, var(--gold), #8A6A2F);
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--serif); font-weight:700; color:var(--bg); font-size:14px;
+  font-family:var(--serif); font-weight:700; color:#0B0D10; font-size:15px;
   flex-shrink:0;
 }
-.brand-text{font-family:var(--serif); font-weight:600; font-size:17px; letter-spacing:0.2px;}
-.brand-sub{font-size:10px; color:var(--text-mute); letter-spacing:.8px; margin-top:1px; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.brand-text{font-family:var(--serif); font-weight:600; font-size:16.5px; letter-spacing:0.2px;}
+.brand-sub{font-size:10px; color:var(--text-mute); letter-spacing:1.5px; text-transform:uppercase; margin-top:1px;}
 
-/* Account switcher */
-.account-switch{padding:12px 14px; border-bottom:1px solid var(--border);}
-.account-switch label{font-size:9.5px; text-transform:uppercase; letter-spacing:1px; color:var(--text-faint); display:block; margin-bottom:5px;}
-.account-switch select{font-size:12.5px; padding:8px 9px;}
-.account-add-link{font-size:11px; color:var(--gold); cursor:pointer; margin-top:7px; display:inline-block;}
-
-.nav{flex:1; padding:12px 10px; display:flex; flex-direction:column; gap:2px; overflow-y:auto;}
+.nav{flex:1; padding:14px 10px; display:flex; flex-direction:column; gap:2px;}
 .nav-item{
   display:flex; align-items:center; gap:11px;
-  padding:11px 12px; border-radius:8px;
+  padding:10px 12px; border-radius:8px;
   color:var(--text-mute); cursor:pointer; font-size:13.5px; font-weight:500;
   border:1px solid transparent;
   transition:background .15s, color .15s;
   user-select:none;
-  min-height:40px;
 }
 .nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
 .nav-item:hover{background:var(--surface-2); color:var(--text);}
-.nav-item.active{background:color-mix(in srgb, var(--gold) 9%, transparent); color:var(--gold); border-color:color-mix(in srgb, var(--gold) 18%, transparent);}
+.nav-item.active{background:rgba(212,175,106,0.09); color:var(--gold); border-color:rgba(212,175,106,0.18);}
 .nav-item.active svg{opacity:1;}
 .nav-group-label{font-size:10px; text-transform:uppercase; letter-spacing:1.3px; color:var(--text-faint); padding:14px 12px 6px;}
 
@@ -175,7 +122,7 @@ button, .nav-item, .setup-radio, .emo-chip, .cal-cell, .auth-tab, select, .theme
 @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.4}}
 
 /* Main */
-.main{margin-left:230px; flex:1; min-width:0; padding:26px 32px 60px;}
+.main{margin-left:220px; flex:1; min-width:0; padding:26px 32px 60px;}
 .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; flex-wrap:wrap; gap:12px;}
 .page-title{font-family:var(--serif); font-size:26px; font-weight:600;}
 .page-sub{color:var(--text-mute); font-size:12.5px; margin-top:3px;}
@@ -183,26 +130,23 @@ button, .nav-item, .setup-radio, .emo-chip, .cal-cell, .auth-tab, select, .theme
 
 .btn{
   background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-  padding:10px 15px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer;
+  padding:9px 15px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer;
   display:inline-flex; align-items:center; gap:7px;
   transition:border-color .15s, background .15s;
-  min-height:40px;
 }
 .btn:hover{border-color:var(--gold-dim);}
 .btn-primary{
-  background:linear-gradient(135deg, var(--accent), var(--accent-dim));
-  color:var(--bg); border:none; font-weight:600;
+  background:linear-gradient(135deg, var(--gold), #B48A44);
+  color:#161006; border:none; font-weight:600;
 }
 .btn-primary:hover{filter:brightness(1.08);}
 .btn-ghost{background:transparent; border:1px solid var(--border);}
 .btn-danger{color:var(--red); border-color:var(--red-dim);}
-.btn-icon{padding:8px 10px; min-height:34px;}
-select, input[type=text], input[type=number], input[type=date], input[type=time], input[type=password], input[type=email], textarea{
+select, input[type=text], input[type=number], input[type=date], input[type=time], textarea{
   background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-  padding:10px 11px; border-radius:7px; font-size:13px; font-family:var(--sans);
-  width:100%; outline:none; min-height:40px;
+  padding:9px 11px; border-radius:7px; font-size:13px; font-family:var(--sans);
+  width:100%; outline:none;
 }
-textarea{min-height:unset;}
 select:focus, input:focus, textarea:focus{border-color:var(--gold-dim);}
 label{font-size:11.5px; color:var(--text-mute); display:block; margin-bottom:6px; letter-spacing:.2px;}
 .field{margin-bottom:14px;}
@@ -215,21 +159,21 @@ label{font-size:11.5px; color:var(--text-mute); display:block; margin-bottom:6px
 @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
 
 /* Stat cards */
-.stats-row{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px;}
-@media(max-width:1100px){.stats-row{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+.stats-row{display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:20px;}
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}}
 .stat-card{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
   padding:16px 17px; position:relative; overflow:hidden;
 }
 .stat-label{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:var(--text-mute); margin-bottom:8px;}
-.stat-value{font-family:var(--mono); font-size:22px; font-weight:600; word-break:break-word;}
+.stat-value{font-family:var(--mono); font-size:22px; font-weight:600;}
 .stat-value.pos{color:var(--green);}
 .stat-value.neg{color:var(--red);}
 .stat-value.gold{color:var(--gold);}
 .stat-foot{font-size:11px; color:var(--text-faint); margin-top:6px;}
 
 /* Score ring card */
+.score-card{display:flex; align-items:center; gap:14px;}
 .ring-wrap{position:relative; width:52px; height:52px; flex-shrink:0;}
 .ring-wrap svg{transform:rotate(-90deg);}
 .ring-bg{fill:none; stroke:var(--border); stroke-width:5;}
@@ -238,23 +182,17 @@ label{font-size:11.5px; color:var(--text-mute); display:block; margin-bottom:6px
 
 /* Panels */
 .panel{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin-bottom:20px;}
-.panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:10px; flex-wrap:wrap;}
+.panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
 .panel-title{font-family:var(--serif); font-size:15.5px; font-weight:600;}
 .panel-title small{display:block; font-family:var(--sans); font-weight:400; font-size:11px; color:var(--text-mute); margin-top:2px;}
-.widget-controls{display:flex; gap:5px; align-items:center;}
-.widget-controls button{background:var(--surface-2); border:1px solid var(--border); color:var(--text-mute); width:26px; height:26px; border-radius:6px; cursor:pointer; font-size:12px;}
-.widget-controls button:hover{color:var(--text); border-color:var(--gold-dim);}
 
-#dashboardWidgets{display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start;}
-#dashboardWidgets .wfull{grid-column:1/-1;}
-@media(max-width:1000px){#dashboardWidgets{grid-template-columns:1fr;}}
 .two-col{display:grid; grid-template-columns:1.4fr 1fr; gap:18px;}
 @media(max-width:1000px){.two-col{grid-template-columns:1fr;}}
 
 /* calendar heatmap */
-.cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;}
+.cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
 .cal-nav{display:flex; gap:6px;}
-.cal-nav button{background:var(--surface-2); border:1px solid var(--border); color:var(--text-mute); width:28px; height:28px; border-radius:6px; cursor:pointer;}
+.cal-nav button{background:var(--surface-2); border:1px solid var(--border); color:var(--text-mute); width:26px; height:26px; border-radius:6px; cursor:pointer;}
 .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
 .cal-dow{font-size:10px; text-align:center; color:var(--text-faint); padding-bottom:4px; text-transform:uppercase;}
 .cal-cell{
@@ -264,35 +202,33 @@ label{font-size:11.5px; color:var(--text-mute); display:block; margin-bottom:6px
   background:var(--surface-2); color:var(--text-faint);
 }
 .cal-cell.empty{border:none; background:transparent;}
-.cal-cell.win{background:color-mix(in srgb, var(--green) 14%, transparent); border-color:color-mix(in srgb, var(--green) 35%, transparent); color:var(--green);}
-.cal-cell.loss{background:color-mix(in srgb, var(--red) 13%, transparent); border-color:color-mix(in srgb, var(--red) 32%, transparent); color:var(--red);}
-.cal-cell .cal-r{font-weight:700; font-size:10.5px;}
+.cal-cell.win{background:rgba(95,191,122,0.14); border-color:rgba(95,191,122,0.35); color:var(--green);}
+.cal-cell.loss{background:rgba(229,101,74,0.13); border-color:rgba(229,101,74,0.32); color:var(--red);}
+.cal-cell .cal-r{font-weight:700; font-size:11px;}
 .cal-cell .cal-day{position:absolute; top:3px; left:5px; font-size:8.5px; color:var(--text-faint);}
-.cal-legend{display:flex; gap:14px; margin-top:12px; font-size:10.5px; color:var(--text-mute); flex-wrap:wrap;}
+.cal-legend{display:flex; gap:14px; margin-top:12px; font-size:10.5px; color:var(--text-mute);}
 .legend-dot{width:8px; height:8px; border-radius:2px; display:inline-block; margin-right:5px;}
 
 /* table */
-.table-scroll{overflow-x:auto;}
-table{width:100%; border-collapse:collapse; font-size:13px; min-width:640px;}
+table{width:100%; border-collapse:collapse; font-size:13px;}
 th{
   text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.6px;
   color:var(--text-faint); padding:9px 10px; border-bottom:1px solid var(--border); font-weight:600;
-  white-space:nowrap;
 }
-td{padding:11px 10px; border-bottom:1px solid var(--border); color:var(--text); white-space:nowrap;}
+td{padding:11px 10px; border-bottom:1px solid var(--border); color:var(--text);}
 tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:var(--surface-2);}
 .tag{
   display:inline-block; font-size:10.5px; padding:3px 8px; border-radius:99px;
   background:var(--surface-2); border:1px solid var(--border); color:var(--text-mute); font-family:var(--mono);
 }
-.tag.setup{color:var(--gold); border-color:var(--gold-dim); background:color-mix(in srgb, var(--gold) 8%, transparent);}
+.tag.setup{color:var(--gold); border-color:var(--gold-dim); background:rgba(212,175,106,0.08);}
 .pnl-pos{color:var(--green); font-family:var(--mono); font-weight:600;}
 .pnl-neg{color:var(--red); font-family:var(--mono); font-weight:600;}
 .pill-win{color:var(--green); background:var(--green-dim); padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:600;}
 .pill-loss{color:var(--red); background:var(--red-dim); padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:600;}
 .pill-be{color:var(--text-mute); background:var(--surface-2); padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:600; border:1px solid var(--border);}
-.row-del{color:var(--text-faint); cursor:pointer; font-size:13px; padding:6px;}
+.row-del{color:var(--text-faint); cursor:pointer; font-size:13px;}
 .row-del:hover{color:var(--red);}
 
 /* empty state */
@@ -302,18 +238,17 @@ tbody tr:hover{background:var(--surface-2);}
 
 /* filters bar */
 .filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
-.filters select, .filters input{width:auto; min-width:130px; flex:1 1 130px;}
+.filters select, .filters input{width:auto; min-width:130px;}
 
 /* form card in add-trade */
 .form-panel{max-width:760px;}
 .setup-radios{display:grid; grid-template-columns:repeat(2,1fr); gap:8px;}
-@media(max-width:520px){.setup-radios{grid-template-columns:1fr;}}
 .setup-radio{
-  border:1px solid var(--border); border-radius:8px; padding:11px 12px; cursor:pointer;
+  border:1px solid var(--border); border-radius:8px; padding:10px 12px; cursor:pointer;
   font-size:12.5px; color:var(--text-mute); display:flex; align-items:center; gap:8px; background:var(--surface-2);
 }
-.setup-radio input{width:auto; min-height:unset;}
-.setup-radio.checked{border-color:var(--gold); color:var(--gold); background:color-mix(in srgb, var(--gold) 7%, transparent);}
+.setup-radio input{width:auto;}
+.setup-radio.checked{border-color:var(--gold); color:var(--gold); background:rgba(212,175,106,0.07);}
 .rr-preview{
   margin-top:6px; padding:10px 12px; border-radius:8px; background:var(--surface-2);
   border:1px solid var(--border); font-family:var(--mono); font-size:12px; color:var(--text-mute);
@@ -322,20 +257,19 @@ tbody tr:hover{background:var(--surface-2);}
 .rr-preview b{color:var(--gold);}
 .emotion-row{display:flex; gap:8px; flex-wrap:wrap;}
 .emo-chip{
-  padding:8px 13px; border-radius:99px; border:1px solid var(--border); background:var(--surface-2);
+  padding:7px 13px; border-radius:99px; border:1px solid var(--border); background:var(--surface-2);
   font-size:12px; cursor:pointer; color:var(--text-mute);
 }
-.emo-chip.checked{border-color:var(--gold); color:var(--gold); background:color-mix(in srgb, var(--gold) 8%, transparent);}
+.emo-chip.checked{border-color:var(--gold); color:var(--gold); background:rgba(212,175,106,0.08);}
 
 /* notebook */
 .note-entry{border-bottom:1px solid var(--border); padding:14px 0;}
 .note-entry:last-child{border-bottom:none;}
 .note-date{font-family:var(--mono); font-size:11px; color:var(--gold); margin-bottom:6px;}
 .note-text{font-size:13px; color:var(--text); white-space:pre-wrap; line-height:1.5;}
-.checklist-item{display:flex; align-items:center; gap:9px; padding:9px 0; font-size:13px; color:var(--text-mute); border-bottom:1px dashed var(--border);}
-.checklist-item input{width:auto; min-height:unset;}
+.checklist-item{display:flex; align-items:center; gap:9px; padding:7px 0; font-size:13px; color:var(--text-mute); border-bottom:1px dashed var(--border);}
+.checklist-item input{width:auto;}
 .checklist-item.done{color:var(--text-faint); text-decoration:line-through;}
-.checklist-add{display:flex; gap:8px; margin-top:10px;}
 
 /* modal */
 .modal-bg{position:fixed; inset:0; background:rgba(5,6,8,0.7); backdrop-filter:blur(3px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px;}
@@ -344,54 +278,26 @@ tbody tr:hover{background:var(--surface-2);}
 .modal-title{font-family:var(--serif); font-size:17px; margin-bottom:14px;}
 
 /* hamburger for mobile */
-.hamburger{display:none; background:var(--surface-2); border:1px solid var(--border); color:var(--text); width:40px; height:40px; border-radius:8px; cursor:pointer; font-size:16px;}
+.hamburger{display:none; background:var(--surface-2); border:1px solid var(--border); color:var(--text); width:36px; height:36px; border-radius:8px; cursor:pointer;}
 @media(max-width:880px){
-  .sidebar{transform:translateX(-100%); width:250px;}
-  .sidebar.open{transform:translateX(0); box-shadow:0 0 40px rgba(0,0,0,.5);}
-  .main{margin-left:0; padding:16px 14px 50px;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0; padding:18px 16px 50px;}
   .hamburger{display:block;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
   .grid-2, .grid-3{grid-template-columns:1fr;}
-  .page-title{font-size:21px;}
-}
-@media(max-width:420px){
-  .stats-row{grid-template-columns:1fr 1fr;}
-  .main{padding:14px 10px 46px;}
 }
 .overlay{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:40; display:none;}
 .overlay.show{display:block;}
 
 .small-mute{font-size:11.5px; color:var(--text-faint);}
-.inline-alert{background:color-mix(in srgb, var(--gold) 9%, transparent); border:1px solid var(--gold-dim); color:var(--text); padding:12px 14px; border-radius:9px; font-size:12.5px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
-
-/* theme swatches */
-.theme-row{display:flex; gap:10px; flex-wrap:wrap;}
-.theme-swatch{
-  width:66px; cursor:pointer; border:2px solid transparent; border-radius:10px; padding:4px; text-align:center;
-}
-.theme-swatch.active{border-color:var(--gold);}
-.theme-swatch .sw-preview{height:38px; border-radius:6px; margin-bottom:5px; border:1px solid var(--border);}
-.theme-swatch span{font-size:10px; color:var(--text-mute);}
-
-/* widget manager */
-.widget-manage-row{display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; gap:8px;}
-.widget-manage-row:last-child{border-bottom:none;}
-.wm-left{display:flex; align-items:center; gap:10px;}
-.wm-toggle{width:auto; min-height:unset;}
-.wm-arrows{display:flex; gap:4px;}
-.wm-arrows button{width:26px; height:26px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-mute); cursor:pointer; font-size:11px;}
-
-/* accounts list */
-.account-row{display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--border); gap:10px; flex-wrap:wrap;}
-.account-row:last-child{border-bottom:none;}
-.account-row .a-name{font-weight:600; font-size:13.5px;}
-.account-row .a-meta{font-size:11px; color:var(--text-mute); font-family:var(--mono);}
 
 /* ---------- Auth screen ---------- */
 #authScreen{
   min-height:100vh; display:flex; align-items:center; justify-content:center;
   background:
-    radial-gradient(circle at 15% 10%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%),
-    radial-gradient(circle at 85% 90%, color-mix(in srgb, var(--green) 6%, transparent), transparent 40%),
+    radial-gradient(circle at 15% 10%, rgba(212,175,106,0.08), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(95,191,122,0.05), transparent 40%),
     var(--bg);
   padding:24px;
 }
@@ -403,91 +309,31 @@ tbody tr:hover{background:var(--surface-2);}
 .auth-title{font-family:var(--serif); font-size:20px; font-weight:600; margin-bottom:4px;}
 .auth-sub{font-size:12.5px; color:var(--text-mute); margin-bottom:22px;}
 .auth-tabs{display:flex; border:1px solid var(--border); border-radius:9px; padding:3px; margin-bottom:20px;}
-.auth-tab{flex:1; text-align:center; padding:9px; border-radius:7px; font-size:12.5px; font-weight:600; color:var(--text-mute); cursor:pointer;}
+.auth-tab{flex:1; text-align:center; padding:8px; border-radius:7px; font-size:12.5px; font-weight:600; color:var(--text-mute); cursor:pointer;}
 .auth-tab.active{background:var(--surface-2); color:var(--gold);}
 .auth-error{
-  background:color-mix(in srgb, var(--red) 10%, transparent); border:1px solid var(--red-dim); color:var(--red);
+  background:rgba(229,101,74,0.1); border:1px solid var(--red-dim); color:var(--red);
   padding:9px 12px; border-radius:8px; font-size:12px; margin-bottom:14px; display:none;
 }
 .auth-info{
-  background:color-mix(in srgb, var(--green) 10%, transparent); border:1px solid var(--green-dim); color:var(--green);
+  background:rgba(95,191,122,0.1); border:1px solid var(--green-dim); color:var(--green);
   padding:9px 12px; border-radius:8px; font-size:12px; margin-bottom:14px; display:none;
 }
 .auth-foot{margin-top:16px; text-align:center; font-size:12px; color:var(--text-faint);}
 .config-banner{
   max-width:380px; margin-top:16px; padding:12px 14px; border-radius:9px;
-  background:color-mix(in srgb, var(--gold) 8%, transparent); border:1px solid var(--gold-dim); color:var(--text-mute);
+  background:rgba(212,175,106,0.08); border:1px solid var(--gold-dim); color:var(--text-mute);
   font-size:11.5px; line-height:1.5;
 }
 .config-banner code{color:var(--gold); font-family:var(--mono);}
 #appRoot{display:none;}
 #appRoot.show{display:block;}
+.loader-dots::after{content:'…'; animation:dots 1.2s steps(4,end) infinite;}
+@keyframes dots{0%,20%{content:'.'} 40%{content:'..'} 60%,100%{content:'...'}}
 .user-pill{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;}
-.user-email{font-size:11px; color:var(--text-mute); font-family:var(--mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px;}
-.logout-btn{background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:11px; text-decoration:underline; min-height:unset;}
+.user-email{font-size:11px; color:var(--text-mute); font-family:var(--mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px;}
+.logout-btn{background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:11px; text-decoration:underline;}
 .logout-btn:hover{color:var(--red);}
-
-/* ===================== Forex Sessions Clock widget (namespaced) ===================== */
-.fxclock{
-  --fx-bg:var(--surface-2);
-  --fx-border:var(--border);
-  --fx-sydney:#22D3A0;   --fx-sydney-dim:#0D5C43;   --fx-sydney-glow:rgba(34,211,160,0.12);
-  --fx-tokyo:#A78BFA;    --fx-tokyo-dim:#4C3A8A;    --fx-tokyo-glow:rgba(167,139,250,0.12);
-  --fx-london:#F59E0B;   --fx-london-dim:#7A4E06;   --fx-london-glow:rgba(245,158,11,0.12);
-  --fx-newyork:#F87171;  --fx-newyork-dim:#7A1C1C;  --fx-newyork-glow:rgba(248,113,113,0.12);
-  --fx-overlap:#60A5FA;  --fx-overlap-glow:rgba(96,165,250,0.10);
-  --fx-text1:var(--text); --fx-text2:var(--text-mute); --fx-text3:var(--text-faint);
-  display:flex; flex-direction:column; gap:10px;
-}
-.fxclock .fx-header{text-align:center; padding:14px 16px 12px; background:var(--fx-bg); border:1px solid var(--fx-border); border-radius:12px; position:relative; overflow:hidden;}
-.fxclock .fx-header::before{content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:.4;}
-.fxclock .fx-ist-label{font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--fx-text3); font-family:var(--mono); margin-bottom:4px;}
-.fxclock .fx-ist-time{font-family:var(--mono); font-size:clamp(24px,6vw,36px); font-weight:700; color:var(--gold); letter-spacing:.03em; line-height:1;}
-.fxclock .fx-ist-time .fx-seconds{font-size:.55em; font-weight:400; color:var(--fx-text2); margin-left:2px;}
-.fxclock .fx-ist-date{font-size:11px; color:var(--fx-text2); font-family:var(--mono); margin-top:5px;}
-.fxclock .fx-active-banner{display:none; padding:8px 14px; border-radius:10px; font-size:11px; font-weight:600; letter-spacing:.05em; text-align:center; font-family:var(--mono); animation:fxpulse 2s ease-in-out infinite;}
-@keyframes fxpulse{0%,100%{opacity:1}50%{opacity:.7}}
-.fxclock .fx-active-banner.show{display:block;}
-.fxclock .fx-timeline-wrap{background:var(--fx-bg); border:1px solid var(--fx-border); border-radius:12px; padding:12px 14px;}
-.fxclock .fx-tl-label{font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--fx-text3); font-family:var(--mono); margin-bottom:8px;}
-.fxclock .fx-timeline{position:relative; height:20px; background:var(--bg); border-radius:4px; overflow:hidden; border:1px solid var(--fx-border);}
-.fxclock .fx-tl-seg{position:absolute; top:0; height:100%; border-radius:2px; opacity:.55; transition:opacity .3s;}
-.fxclock .fx-tl-needle{position:absolute; top:0; bottom:0; width:2px; background:#fff; border-radius:1px; z-index:10; box-shadow:0 0 6px rgba(255,255,255,.8); transition:left .5s linear;}
-.fxclock .fx-tl-hours{display:flex; justify-content:space-between; margin-top:5px;}
-.fxclock .fx-tl-hours span{font-size:8px; color:var(--fx-text3); font-family:var(--mono);}
-.fxclock .fx-sessions-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
-.fxclock .fx-card{background:var(--fx-bg); border:1px solid var(--fx-border); border-radius:12px; padding:12px 13px; position:relative; overflow:hidden; transition:border-color .3s, box-shadow .3s, transform .2s;}
-.fxclock .fx-card::before{content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:12px 12px 0 0; opacity:.4; transition:opacity .3s;}
-.fxclock .fx-card.sydney::before{background:var(--fx-sydney)} .fxclock .fx-card.tokyo::before{background:var(--fx-tokyo)}
-.fxclock .fx-card.london::before{background:var(--fx-london)} .fxclock .fx-card.newyork::before{background:var(--fx-newyork)}
-.fxclock .fx-card.active{transform:translateY(-2px);}
-.fxclock .fx-card.sydney.active{border-color:var(--fx-sydney-dim); box-shadow:0 4px 20px var(--fx-sydney-glow), inset 0 0 30px var(--fx-sydney-glow);}
-.fxclock .fx-card.tokyo.active{border-color:var(--fx-tokyo-dim); box-shadow:0 4px 20px var(--fx-tokyo-glow), inset 0 0 30px var(--fx-tokyo-glow);}
-.fxclock .fx-card.london.active{border-color:var(--fx-london-dim); box-shadow:0 4px 20px var(--fx-london-glow), inset 0 0 30px var(--fx-london-glow);}
-.fxclock .fx-card.newyork.active{border-color:var(--fx-newyork-dim); box-shadow:0 4px 20px var(--fx-newyork-glow), inset 0 0 30px var(--fx-newyork-glow);}
-.fxclock .fx-card.active::before{opacity:1;}
-.fxclock .fx-sc-top{display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px;}
-.fxclock .fx-sc-icon{font-size:17px; line-height:1;}
-.fxclock .fx-sc-dot{width:7px; height:7px; border-radius:50%; background:var(--fx-border); margin-top:3px; flex-shrink:0; transition:background .3s, box-shadow .3s;}
-.fxclock .fx-card.sydney.active .fx-sc-dot{background:var(--fx-sydney); box-shadow:0 0 6px var(--fx-sydney);}
-.fxclock .fx-card.tokyo.active .fx-sc-dot{background:var(--fx-tokyo); box-shadow:0 0 6px var(--fx-tokyo);}
-.fxclock .fx-card.london.active .fx-sc-dot{background:var(--fx-london); box-shadow:0 0 6px var(--fx-london);}
-.fxclock .fx-card.newyork.active .fx-sc-dot{background:var(--fx-newyork); box-shadow:0 0 6px var(--fx-newyork);}
-.fxclock .fx-sc-name{font-size:11.5px; font-weight:600; letter-spacing:.04em; color:var(--fx-text2); margin-bottom:1px; transition:color .3s;}
-.fxclock .fx-card.sydney.active .fx-sc-name{color:var(--fx-sydney);} .fxclock .fx-card.tokyo.active .fx-sc-name{color:var(--fx-tokyo);}
-.fxclock .fx-card.london.active .fx-sc-name{color:var(--fx-london);} .fxclock .fx-card.newyork.active .fx-sc-name{color:var(--fx-newyork);}
-.fxclock .fx-sc-local-time{font-family:var(--mono); font-size:18px; font-weight:700; color:var(--fx-text1); line-height:1; margin-bottom:4px;}
-.fxclock .fx-sc-ist-range{font-size:9px; color:var(--fx-text3); font-family:var(--mono); margin-bottom:8px;}
-.fxclock .fx-sc-progress{height:3px; background:var(--fx-border); border-radius:99px; overflow:hidden;}
-.fxclock .fx-sc-progress-fill{height:100%; border-radius:99px; width:0%; transition:width .5s ease;}
-.fxclock .fx-card.sydney .fx-sc-progress-fill{background:var(--fx-sydney);} .fxclock .fx-card.tokyo .fx-sc-progress-fill{background:var(--fx-tokyo);}
-.fxclock .fx-card.london .fx-sc-progress-fill{background:var(--fx-london);} .fxclock .fx-card.newyork .fx-sc-progress-fill{background:var(--fx-newyork);}
-.fxclock .fx-sc-status{font-size:9px; font-family:var(--mono); color:var(--fx-text3); margin-top:5px; min-height:12px;}
-.fxclock .fx-card.active .fx-sc-status{color:var(--fx-text2);}
-.fxclock .fx-overlap-badge{display:none; background:var(--fx-overlap-glow); border:1px solid rgba(96,165,250,0.2); border-radius:8px; padding:7px 12px; text-align:center; font-size:10px; font-family:var(--mono); color:var(--fx-overlap); letter-spacing:.05em;}
-.fxclock .fx-overlap-badge.show{display:block;}
-.fxclock .fx-footer{text-align:center; font-size:9px; color:var(--fx-text3); font-family:var(--mono); letter-spacing:.06em;}
-@media(max-width:480px){.fxclock .fx-sessions-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
@@ -497,10 +343,10 @@ tbody tr:hover{background:var(--surface-2);}
   <div>
     <div class="auth-card">
       <div class="auth-brand">
-        <div class="brand-mark">GB</div>
+        <div class="brand-mark">Zₓ</div>
         <div>
           <div class="brand-text">GoldBook</div>
-          <div class="brand-sub" style="margin-top:0;">Trading Journal</div>
+          <div class="brand-sub" style="margin-top:0;">XAU/USD Journal</div>
         </div>
       </div>
       <div class="auth-tabs">
@@ -520,7 +366,24 @@ tbody tr:hover{background:var(--surface-2);}
           <label>Password</label>
           <input type="password" id="auth_password" autocomplete="current-password" required minlength="6">
         </div>
+        <div class="field signup-only" id="fld_starting_balance" style="display:none;">
+          <label>Starting Account Balance ($)</label>
+          <input type="number" step="0.01" id="auth_balance" placeholder="e.g. 5000">
+        </div>
+        <div class="field signup-only" id="fld_risk_percent" style="display:none;">
+          <label>Risk per Trade (%)</label>
+          <input type="number" step="0.1" id="auth_risk" placeholder="e.g. 1" value="1">
+        </div>
         <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="authSubmitBtn">Log In</button>
+      </form>
+      <!-- OTP verification step (shown after sign up) -->
+      <form id="otpForm" style="display:none; margin-top:4px;">
+        <div class="field">
+          <label>Enter the 6-digit code emailed to you</label>
+          <input type="text" id="otp_code" inputmode="numeric" maxlength="6" placeholder="123456" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="otpSubmitBtn">Verify Email</button>
+        <div class="auth-foot" style="margin-top:10px;">Didn't get a code? <span id="resendOtp" style="color:var(--gold); cursor:pointer; text-decoration:underline;">Resend</span></div>
       </form>
       <div class="auth-foot">Your trades are private — only you can see them.</div>
     </div>
@@ -535,19 +398,12 @@ tbody tr:hover{background:var(--surface-2);}
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-mark" id="brandMark">GB</div>
-      <div style="min-width:0;">
+      <div class="brand-mark">Zₓ</div>
+      <div>
         <div class="brand-text">GoldBook</div>
-        <div class="brand-sub" id="journalTagLabel">Trading Journal</div>
+        <div class="brand-sub">XAU/USD Journal</div>
       </div>
     </div>
-
-    <div class="account-switch">
-      <label>Account</label>
-      <select id="accountSelect"></select>
-      <span class="account-add-link" id="addAccountLink">+ Add another account</span>
-    </div>
-
     <div class="nav">
       <div class="nav-item active" data-view="dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
@@ -569,10 +425,10 @@ tbody tr:hover{background:var(--surface-2);}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         Notebook
       </div>
-      <div class="nav-group-label">Manage</div>
+      <div class="nav-group-label">Data</div>
       <div class="nav-item" data-view="settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
+        Export / Import
       </div>
     </div>
     <div class="sidebar-foot">
@@ -581,17 +437,18 @@ tbody tr:hover{background:var(--surface-2);}
         <button class="logout-btn" id="logoutBtn">Log out</button>
       </div>
       <div class="session-pill"><span class="dot-live"></span><span id="istClock">--:--:-- IST</span></div>
+      <div class="small-mute" style="margin-top:6px;">5:30 AM candle · Fib session model</div>
     </div>
   </div>
 
   <!-- MAIN -->
   <div class="main">
     <div class="topbar">
-      <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+      <div style="display:flex; align-items:center; gap:12px;">
         <button class="hamburger" id="hamburger">☰</button>
-        <div style="min-width:0;">
+        <div>
           <div class="page-title" id="pageTitle">Dashboard</div>
-          <div class="page-sub" id="pageSub">Your trading performance at a glance</div>
+          <div class="page-sub" id="pageSub">Your XAU/USD performance at a glance</div>
         </div>
       </div>
       <div class="topbar-right">
@@ -601,29 +458,76 @@ tbody tr:hover{background:var(--surface-2);}
 
     <!-- ============ DASHBOARD ============ -->
     <div class="view active" id="view-dashboard">
-      <div id="noSetupsAlert" class="inline-alert" style="display:none;">
-        <span>You haven't added any setups yet. Add your first setup to start tagging trades.</span>
-        <button class="btn btn-primary btn-icon" data-goto="settings">Add setup</button>
+      <div class="stats-row" id="statsRow"></div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Equity Curve<small>Cumulative R across all logged trades</small></div>
+          </div>
+          <canvas id="equityChart" height="110"></canvas>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Session Score<small>Discipline · consistency · edge</small></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:18px;">
+            <div class="ring-wrap" style="width:90px; height:90px;">
+              <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle class="ring-bg" cx="45" cy="45" r="38"></circle>
+                <circle class="ring-fg" id="scoreRing" cx="45" cy="45" r="38" stroke-dasharray="238.7" stroke-dashoffset="238.7"></circle>
+              </svg>
+              <div class="ring-num" id="scoreNum" style="font-size:20px;">0</div>
+            </div>
+            <div style="flex:1;">
+              <div class="small-mute" style="margin-bottom:8px;">Based on win rate, profit factor, and R consistency of your last 30 trades.</div>
+              <div id="scoreBreakdown" style="display:flex; flex-direction:column; gap:6px;"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="dashboardWidgets"></div>
+
+      <div class="panel">
+        <div class="cal-head">
+          <div class="panel-title" id="calTitle">This Month<small>Daily P&amp;L by IST session</small></div>
+          <div class="cal-nav">
+            <button id="calPrev">‹</button>
+            <button id="calNext">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <span><span class="legend-dot" style="background:rgba(95,191,122,0.4)"></span>Winning day</span>
+          <span><span class="legend-dot" style="background:rgba(229,101,74,0.4)"></span>Losing day</span>
+          <span><span class="legend-dot" style="background:var(--surface-2); border:1px solid var(--border)"></span>No trades</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Recent Trades<small>Last 8 entries</small></div>
+          <span class="small-mute" style="cursor:pointer; color:var(--gold);" data-goto="log">View all →</span>
+        </div>
+        <div id="recentTradesWrap"></div>
+      </div>
     </div>
 
     <!-- ============ ADD TRADE ============ -->
     <div class="view" id="view-addtrade">
       <div class="panel form-panel">
-        <div id="addTradeBlocked" class="inline-alert" style="display:none;">
-          <span>Add at least one setup in Settings before logging a trade.</span>
-          <button class="btn btn-primary btn-icon" data-goto="settings">Go to Settings</button>
-        </div>
         <form id="tradeForm">
-          <div class="grid-2">
+          <div class="grid-3">
             <div class="field">
               <label>Date</label>
               <input type="date" id="f_date" required>
             </div>
             <div class="field">
-              <label>Session Time (optional)</label>
-              <input type="time" id="f_time">
+              <label>Trade Open Time (IST)</label>
+              <input type="time" id="f_open_time" value="05:30">
+            </div>
+            <div class="field">
+              <label>Trade Close Time (IST)</label>
+              <input type="time" id="f_close_time">
             </div>
           </div>
 
@@ -641,33 +545,44 @@ tbody tr:hover{background:var(--surface-2);}
               </select>
             </div>
             <div class="field">
-              <label>Symbol / Pair</label>
-              <input type="text" id="f_symbol" placeholder="e.g. EURUSD, XAUUSD, GBPJPY">
+              <label>Fib Entry Level</label>
+              <select id="f_fib">
+                <option value="0.25">0.25</option>
+                <option value="0.5">0.5</option>
+                <option value="0.618">0.618</option>
+                <option value="0.75">0.75</option>
+                <option value="custom">Custom</option>
+              </select>
             </div>
             <div class="field">
-              <label>Entry Level Notes (optional)</label>
-              <input type="text" id="f_entrynotes" placeholder="e.g. 0.618 fib, OB retest">
+              <label>Base Currency / Symbol</label>
+              <input type="text" id="f_symbol" value="XAU/USD">
             </div>
           </div>
 
           <div class="grid-3">
             <div class="field">
               <label>Entry Price</label>
-              <input type="number" step="any" id="f_entry" required>
+              <input type="number" step="0.01" id="f_entry" required>
             </div>
             <div class="field">
               <label>Stop Loss</label>
-              <input type="number" step="any" id="f_sl" required>
+              <input type="number" step="0.01" id="f_sl" required>
             </div>
             <div class="field">
               <label>Target</label>
-              <input type="number" step="any" id="f_tp" required>
+              <input type="number" step="0.01" id="f_tp" required>
             </div>
           </div>
 
           <div class="rr-preview">
             <span>Risk : Reward</span>
             <span>1 : <b id="rrLive">–</b></span>
+          </div>
+
+          <div class="field" style="margin-top:14px;">
+            <label>Risk/Reward Tag</label>
+            <div class="setup-radios" id="rrRadios"></div>
           </div>
 
           <div class="grid-2" style="margin-top:14px;">
@@ -681,7 +596,7 @@ tbody tr:hover{background:var(--surface-2);}
             </div>
             <div class="field">
               <label>P&amp;L (in R)</label>
-              <input type="number" step="any" id="f_pnlr" placeholder="e.g. 2 or -1">
+              <input type="number" step="0.01" id="f_pnlr" placeholder="e.g. 2 or -1">
             </div>
           </div>
 
@@ -708,11 +623,11 @@ tbody tr:hover{background:var(--surface-2);}
 
           <div class="field">
             <label>Notes / Trade Thesis</label>
-            <textarea id="f_notes" rows="4" placeholder="Why did you take this trade? What was your read on structure and session context?"></textarea>
+            <textarea id="f_notes" rows="4" placeholder="Why did you take this trade? What did the 5:30 candle and session structure look like?"></textarea>
           </div>
 
-          <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;">
-            <button type="submit" class="btn btn-primary" id="tradeSubmitBtn">Save Trade</button>
+          <div style="display:flex; gap:10px; margin-top:6px;">
+            <button type="submit" class="btn btn-primary">Save Trade</button>
             <button type="reset" class="btn btn-ghost">Clear</button>
           </div>
         </form>
@@ -732,8 +647,8 @@ tbody tr:hover{background:var(--surface-2);}
         <input type="text" id="filterSearch" placeholder="Search notes…">
         <button class="btn btn-ghost" id="clearFilters">Clear filters</button>
       </div>
-      <div class="panel" style="padding:0;">
-        <div class="table-scroll" id="logTableWrap"></div>
+      <div class="panel" style="padding:0; overflow-x:auto;">
+        <div id="logTableWrap"></div>
       </div>
     </div>
 
@@ -772,16 +687,12 @@ tbody tr:hover{background:var(--surface-2);}
           </div>
           <div class="field">
             <label>Reflection</label>
-            <textarea id="note_text" rows="6" placeholder="How did today's session go? What did you observe?"></textarea>
+            <textarea id="note_text" rows="6" placeholder="How did today's session go? What did you observe in the 5:30 candle, London, and Asia sessions?"></textarea>
           </div>
           <button class="btn btn-primary" id="saveNoteBtn">Save Entry</button>
 
           <div class="panel-title" style="margin:22px 0 4px;">Pre-Session Checklist</div>
           <div id="checklistWrap"></div>
-          <div class="checklist-add">
-            <input type="text" id="newChecklistItem" placeholder="Add a checklist item…">
-            <button class="btn btn-ghost btn-icon" id="addChecklistBtn">Add</button>
-          </div>
         </div>
         <div class="panel">
           <div class="panel-title" style="margin-bottom:10px;">Past Entries</div>
@@ -790,55 +701,49 @@ tbody tr:hover{background:var(--surface-2);}
       </div>
     </div>
 
-    <!-- ============ SETTINGS ============ -->
+    <!-- ============ SETTINGS / EXPORT ============ -->
     <div class="view" id="view-settings">
       <div class="panel form-panel">
-        <div class="panel-title" style="margin-bottom:10px;">Profile</div>
-        <div class="field">
-          <label>Display name</label>
-          <input type="text" id="displayNameInput" placeholder="What should GoldBook call you?">
+        <div class="panel-title" style="margin-bottom:10px;">Account Balance</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Starting Balance ($)</label>
+            <input type="number" step="0.01" id="settings_balance">
+          </div>
+          <div class="field">
+            <label>Risk per Trade (%)</label>
+            <input type="number" step="0.1" id="settings_risk">
+          </div>
         </div>
-        <button class="btn btn-ghost" id="saveProfileBtn">Save</button>
+        <div class="small-mute" style="margin-bottom:10px;">Current balance: <span id="settingsCurrentBalance" style="color:var(--gold); font-family:var(--mono);">$0.00</span> (compounded from your starting balance using each trade's R multiple and this risk %)</div>
+        <button class="btn btn-primary" id="saveAccountBtn">Save Balance Settings</button>
       </div>
-
       <div class="panel form-panel">
-        <div class="panel-title" style="margin-bottom:10px;">Theme</div>
-        <div class="theme-row" id="themeRow"></div>
-      </div>
-
-      <div class="panel form-panel">
-        <div class="panel-title" style="margin-bottom:10px;">Trading Accounts</div>
-        <p class="small-mute" style="margin-bottom:10px;">Keep separate journals under one login — one per prop firm, broker, or strategy book.</p>
-        <div id="accountsList"></div>
-        <button class="btn btn-ghost" style="margin-top:12px;" id="addAccountBtn2">+ Add account</button>
-      </div>
-
-      <div class="panel form-panel">
-        <div class="panel-title" style="margin-bottom:10px;">Setups <small style="font-weight:400; color:var(--text-mute);">for the active account</small></div>
+        <div class="panel-title" style="margin-bottom:10px;">Custom Setups</div>
         <div class="field" style="display:flex; gap:8px;">
-          <input type="text" id="newSetupName" placeholder="e.g. NY Reversal, 0.618 Fib Retracement">
-          <button class="btn btn-ghost btn-icon" id="addSetupBtn">Add</button>
+          <input type="text" id="newSetupName" placeholder="e.g. NY Reversal">
+          <button class="btn btn-ghost" id="addSetupBtn">Add</button>
         </div>
         <div id="customSetupsList" style="margin-top:8px;"></div>
       </div>
-
       <div class="panel form-panel">
-        <div class="panel-title" style="margin-bottom:10px;">Dashboard Widgets</div>
-        <p class="small-mute" style="margin-bottom:6px;">Show, hide, and reorder what appears on your dashboard.</p>
-        <div id="widgetManageList"></div>
+        <div class="panel-title" style="margin-bottom:10px;">Custom Risk/Reward Tags</div>
+        <div class="field" style="display:flex; gap:8px;">
+          <input type="text" id="newRRName" placeholder="e.g. 1:5">
+          <button class="btn btn-ghost" id="addRRBtn">Add</button>
+        </div>
+        <div id="customRRList" style="margin-top:8px;"></div>
       </div>
-
       <div class="panel form-panel">
         <div class="panel-title" style="margin-bottom:10px;">Export / Import Data</div>
-        <p class="small-mute" style="margin-bottom:12px;">Exports cover the currently active account only.</p>
+        <p class="small-mute" style="margin-bottom:12px;">All data is stored locally in your browser (localStorage). Export a backup regularly, especially before clearing browser data.</p>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btn-ghost" id="exportJsonBtn">Export JSON</button>
-          <button class="btn btn-ghost" id="exportCsvBtn">Export CSV</button>
+          <button class="btn btn-ghost" id="exportBtn">Export JSON</button>
           <label class="btn btn-ghost" style="cursor:pointer;">
             Import JSON
             <input type="file" id="importFile" accept="application/json" style="display:none;">
           </label>
-          <button class="btn btn-danger" id="wipeBtn">Wipe Account Data</button>
+          <button class="btn btn-danger" id="wipeBtn">Wipe All Data</button>
         </div>
       </div>
     </div>
@@ -855,36 +760,21 @@ tbody tr:hover{background:var(--surface-2);}
   </div>
 </div>
 
-<!-- Add/Edit account modal -->
-<div class="modal-bg" id="accountModalBg">
-  <div class="modal">
-    <div class="modal-title" id="accountModalTitle">Add Account</div>
-    <div class="field">
-      <label>Account Number</label>
-      <input type="text" id="am_number" placeholder="e.g. 10045213">
-    </div>
-    <div class="field">
-      <label>Account Name</label>
-      <input type="text" id="am_name" placeholder="e.g. FTMO 100k, Personal MT5">
-    </div>
-    <div class="field">
-      <label>Journal Tag (shown in the sidebar)</label>
-      <input type="text" id="am_tag" placeholder="e.g. Aditya's Prop Journal">
-    </div>
-    <div class="field">
-      <label>Base Currency</label>
-      <input type="text" id="am_currency" placeholder="USD" value="USD">
-    </div>
-    <div style="display:flex; gap:10px;">
-      <button class="btn btn-primary" id="accountModalSave">Save</button>
-      <button class="btn btn-ghost" id="accountModalCancel">Cancel</button>
+<!-- Trade detail / edit modal -->
+<div class="modal-bg" id="tradeModalBg">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-title" id="tradeModalTitle">Trade Detail</div>
+    <div id="tradeModalBody"></div>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="btn btn-primary" id="tradeModalEditBtn">Edit</button>
+      <button class="btn btn-ghost" id="tradeModalClose">Close</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   GoldBook — Supabase config
+   GoldBook Journal — Supabase config
    1. Run schema.sql once in your Supabase project's SQL editor.
    2. Paste your Project URL and anon public key below.
       (Settings -> API in your Supabase dashboard. The anon key
@@ -898,41 +788,19 @@ const SUPABASE_ANON_KEY = 'sb_publishable_avARIs_XvY8heQzq2Y-D4Q_mgweZawA';
 const CONFIGURED = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
 const sb = CONFIGURED ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-const THEMES = [
-  {key:'dark-gold', label:'Gold', bg:'#0B0D10', accent:'#D4AF6A'},
-  {key:'midnight',  label:'Midnight', bg:'#0A0B14', accent:'#7C9CF7'},
-  {key:'emerald',   label:'Emerald', bg:'#08120E', accent:'#4FD69C'},
-  {key:'paper',     label:'Paper', bg:'#F4F1EA', accent:'#A9782E'},
-  {key:'mono',      label:'Mono', bg:'#0D0D0D', accent:'#D8D8D8'},
-];
-
-const DEFAULT_WIDGETS = [
-  {key:'stats', visible:true},
-  {key:'equity', visible:true},
-  {key:'score', visible:true},
-  {key:'forexclock', visible:true},
-  {key:'calendar', visible:true},
-  {key:'recent', visible:true},
-];
-const WIDGET_LABELS = {
-  stats:'Stats Row', equity:'Equity Curve', score:'Session Score',
-  forexclock:'Forex Sessions Clock', calendar:'Calendar Heatmap', recent:'Recent Trades',
-};
-const WIDGET_WIDE = {stats:true, equity:true, calendar:true, recent:true, score:false, forexclock:false};
+const FIXED_SETUPS = ['5:30 AM Fib Entry', 'Asia T', 'London T', 'Orderblock Reaction'];
+const FIXED_RR = ['1:1', '1:2', '1:3', '1:4+'];
 
 let trades = [];
 let notes = [];
 let customSetups = [];
+let customRR = [];
 let checklist = [];
-let accounts = [];
 let currentUser = null;
-let currentAccount = null;
-let prefs = {display_name:'', theme:'dark-gold'};
-let accountModalMode = 'add'; // 'add' | 'edit' | 'first'
-let editingAccountId = null;
+let account = {starting_balance:0, risk_percent:1};
 
-function allSetups(){ return customSetups.map(s=>s.name); }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function allSetups(){ return [...FIXED_SETUPS, ...customSetups.map(s=>s.name)]; }
+function allRR(){ return [...FIXED_RR, ...customRR.map(s=>s.name)]; }
 
 /* ============================================================
    Auth screen wiring
@@ -956,24 +824,41 @@ document.querySelectorAll('.auth-tab').forEach(tab=>{
       document.getElementById('authSub').textContent = 'Log in to access your trading journal.';
       authSubmitBtn.textContent = 'Log In';
       document.getElementById('auth_password').autocomplete = 'current-password';
+      document.querySelectorAll('.signup-only').forEach(el=>el.style.display='none');
     } else {
       document.getElementById('authTitle').textContent = 'Create your account';
       document.getElementById('authSub').textContent = 'Free to join. Your data stays private to you.';
       authSubmitBtn.textContent = 'Sign Up';
       document.getElementById('auth_password').autocomplete = 'new-password';
+      document.querySelectorAll('.signup-only').forEach(el=>el.style.display='block');
     }
   });
 });
 
-function hideAuthMsgs(){ authError.style.display='none'; authInfo.style.display='none'; }
-function showAuthError(msg){ authError.textContent=msg; authError.style.display='block'; authInfo.style.display='none'; }
-function showAuthInfo(msg){ authInfo.textContent=msg; authInfo.style.display='block'; authError.style.display='none'; }
+function hideAuthMsgs(){
+  authError.style.display = 'none';
+  authInfo.style.display = 'none';
+}
+function showAuthError(msg){
+  authError.textContent = msg;
+  authError.style.display = 'block';
+  authInfo.style.display = 'none';
+}
+function showAuthInfo(msg){
+  authInfo.textContent = msg;
+  authInfo.style.display = 'block';
+  authError.style.display = 'none';
+}
 
 if(!CONFIGURED){
   document.getElementById('configBanner').style.display = 'block';
   authSubmitBtn.disabled = true;
   authSubmitBtn.style.opacity = 0.5;
 }
+
+const otpForm = document.getElementById('otpForm');
+let pendingEmail = null;
+let pendingAccountSetup = null; // {starting_balance, risk_percent} captured at signup, applied after OTP verification
 
 authForm.addEventListener('submit', async e=>{
   e.preventDefault();
@@ -991,8 +876,16 @@ authForm.addEventListener('submit', async e=>{
     } else {
       const {data, error} = await sb.auth.signUp({email, password});
       if(error) throw error;
+      pendingAccountSetup = {
+        starting_balance: parseFloat(document.getElementById('auth_balance').value) || 0,
+        risk_percent: parseFloat(document.getElementById('auth_risk').value) || 1,
+      };
       if(data.user && !data.session){
-        showAuthInfo('Account created. Check your email to confirm, then log in.');
+        // Email confirmation required -- switch to OTP entry step
+        pendingEmail = email;
+        authForm.style.display = 'none';
+        otpForm.style.display = 'block';
+        showAuthInfo('We emailed you a 6-digit verification code. Enter it below to finish creating your account.');
         authSubmitBtn.disabled = false;
         authSubmitBtn.textContent = 'Sign Up';
         return;
@@ -1006,13 +899,49 @@ authForm.addEventListener('submit', async e=>{
   }
 });
 
+otpForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  hideAuthMsgs();
+  if(!CONFIGURED || !pendingEmail) return;
+  const otpSubmitBtn = document.getElementById('otpSubmitBtn');
+  const token = document.getElementById('otp_code').value.trim();
+  otpSubmitBtn.disabled = true; otpSubmitBtn.textContent = 'Verifying…';
+  try{
+    const {data, error} = await sb.auth.verifyOtp({email: pendingEmail, token, type:'signup'});
+    if(error) throw error;
+    otpForm.style.display = 'none';
+    authForm.style.display = 'block';
+    document.getElementById('otp_code').value = '';
+    await onLoggedIn(data.user);
+  } catch(err){
+    showAuthError(err.message || 'Invalid or expired code. Please try again.');
+  } finally {
+    otpSubmitBtn.disabled = false; otpSubmitBtn.textContent = 'Verify Email';
+  }
+});
+
+document.getElementById('resendOtp').addEventListener('click', async ()=>{
+  if(!CONFIGURED || !pendingEmail) return;
+  hideAuthMsgs();
+  try{
+    const { error } = await sb.auth.resend({type:'signup', email: pendingEmail});
+    if(error) throw error;
+    showAuthInfo('A new code has been sent to your email.');
+  } catch(err){
+    showAuthError(err.message || 'Could not resend code.');
+  }
+});
+
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   if(sb) await sb.auth.signOut();
-  stopForexClock();
-  currentUser=null; currentAccount=null;
-  trades=[]; notes=[]; customSetups=[]; checklist=[]; accounts=[];
+  currentUser = null;
+  trades = []; notes = []; customSetups = []; customRR = []; checklist = [];
+  account = {starting_balance:0, risk_percent:1};
   appRoot.classList.remove('show');
   authScreen.style.display = 'flex';
+  authForm.style.display = 'block';
+  otpForm.style.display = 'none';
+  pendingEmail = null; pendingAccountSetup = null;
   authForm.reset();
   hideAuthMsgs();
 });
@@ -1020,191 +949,88 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
 async function onLoggedIn(user){
   currentUser = user;
   document.getElementById('userEmailLabel').textContent = user.email;
-  await loadPreferences();
-  applyTheme(prefs.theme);
-  await loadAccounts();
-  if(accounts.length===0){
-    authScreen.style.display = 'none';
-    appRoot.classList.add('show');
-    openAccountModal('first');
-    return;
-  }
-  currentAccount = accounts[0];
-  await loadAccountData();
+  await ensureDefaultChecklist();
+  await ensureAccountRow();
+  await loadAllData();
   authScreen.style.display = 'none';
   appRoot.classList.add('show');
-  populateAccountSelect();
-  refreshBrandLabels();
   showView('dashboard');
 }
 
 async function initAuth(){
   if(!CONFIGURED) return;
   const { data: { session } } = await sb.auth.getSession();
-  if(session && session.user){ await onLoggedIn(session.user); }
+  if(session && session.user){
+    await onLoggedIn(session.user);
+  }
 }
 
 /* ============================================================
-   Preferences (theme + display name)
-============================================================ */
-async function loadPreferences(){
-  const { data } = await sb.from('goldbook_preferences').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if(data){ prefs = {display_name:data.display_name||'', theme:data.theme||'dark-gold'}; }
-  else { prefs = {display_name:'', theme:'dark-gold'}; }
-}
-async function savePreferences(){
-  await sb.from('goldbook_preferences').upsert({
-    user_id: currentUser.id, display_name: prefs.display_name, theme: prefs.theme, updated_at: new Date().toISOString(),
-  });
-}
-function applyTheme(theme){
-  document.documentElement.setAttribute('data-theme', theme);
-  prefs.theme = theme;
-}
-
-/* ============================================================
-   Accounts
-============================================================ */
-async function loadAccounts(){
-  const { data } = await sb.from('goldbook_accounts').select('*').eq('user_id', currentUser.id).order('sort_order',{ascending:true}).order('created_at',{ascending:true});
-  accounts = data || [];
-}
-function populateAccountSelect(){
-  const sel = document.getElementById('accountSelect');
-  sel.innerHTML = accounts.map(a=>`<option value="${a.id}" ${currentAccount && a.id===currentAccount.id?'selected':''}>${escapeHtml(a.account_name)} · #${escapeHtml(a.account_number)}</option>`).join('');
-}
-document.getElementById('accountSelect').addEventListener('change', async e=>{
-  const acc = accounts.find(a=>a.id===e.target.value);
-  if(!acc) return;
-  currentAccount = acc;
-  await loadAccountData();
-  refreshBrandLabels();
-  showView('dashboard');
-});
-document.getElementById('addAccountLink').addEventListener('click', ()=>openAccountModal('add'));
-document.getElementById('addAccountBtn2').addEventListener('click', ()=>openAccountModal('add'));
-
-function openAccountModal(mode, account){
-  accountModalMode = mode;
-  editingAccountId = account ? account.id : null;
-  document.getElementById('accountModalTitle').textContent = mode==='edit' ? 'Edit Account' : (mode==='first' ? 'Create Your First Account' : 'Add Account');
-  document.getElementById('am_number').value = account ? account.account_number : '';
-  document.getElementById('am_name').value = account ? account.account_name : '';
-  document.getElementById('am_tag').value = account ? (account.journal_tag||'') : '';
-  document.getElementById('am_currency').value = account ? (account.base_currency||'USD') : 'USD';
-  document.getElementById('accountModalCancel').style.display = mode==='first' ? 'none' : 'inline-flex';
-  document.getElementById('accountModalBg').classList.add('open');
-}
-document.getElementById('accountModalCancel').addEventListener('click', ()=>document.getElementById('accountModalBg').classList.remove('open'));
-document.getElementById('accountModalSave').addEventListener('click', async ()=>{
-  const number = document.getElementById('am_number').value.trim();
-  const name = document.getElementById('am_name').value.trim();
-  const tag = document.getElementById('am_tag').value.trim();
-  const currency = document.getElementById('am_currency').value.trim() || 'USD';
-  if(!number || !name){ alert('Account number and name are required.'); return; }
-  const btn = document.getElementById('accountModalSave');
-  btn.disabled = true; btn.textContent = 'Saving…';
-  try{
-    if(accountModalMode==='edit' && editingAccountId){
-      const { data, error } = await sb.from('goldbook_accounts')
-        .update({account_number:number, account_name:name, journal_tag:tag, base_currency:currency})
-        .eq('id', editingAccountId).select().single();
-      if(error) throw error;
-      accounts = accounts.map(a=>a.id===data.id?data:a);
-      if(currentAccount && currentAccount.id===data.id) currentAccount = data;
-    } else {
-      const { data, error } = await sb.from('goldbook_accounts')
-        .insert({user_id:currentUser.id, account_number:number, account_name:name, journal_tag:tag, base_currency:currency, widgets_config:DEFAULT_WIDGETS, sort_order:accounts.length})
-        .select().single();
-      if(error) throw error;
-      accounts.push(data);
-      if(accountModalMode==='first' || !currentAccount){
-        currentAccount = data;
-        await loadAccountData();
-      }
-    }
-    document.getElementById('accountModalBg').classList.remove('open');
-    populateAccountSelect();
-    refreshBrandLabels();
-    if(document.getElementById('view-settings').classList.contains('active')) renderSettings();
-    showView('dashboard');
-  } catch(err){
-    alert('Could not save account: ' + err.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Save';
-  }
-});
-
-async function deleteAccount(id){
-  if(accounts.length<=1){ alert('You need at least one account.'); return; }
-  if(!confirm('Delete this account and everything logged under it? This cannot be undone.')) return;
-  const { error } = await sb.from('goldbook_accounts').delete().eq('id', id);
-  if(error){ alert('Could not delete: ' + error.message); return; }
-  accounts = accounts.filter(a=>a.id!==id);
-  if(currentAccount && currentAccount.id===id){
-    currentAccount = accounts[0];
-    await loadAccountData();
-    refreshBrandLabels();
-    showView('dashboard');
-  }
-  populateAccountSelect();
-  renderSettings();
-}
-
-function refreshBrandLabels(){
-  if(!currentAccount) return;
-  const tagText = currentAccount.journal_tag || currentAccount.account_name;
-  document.getElementById('journalTagLabel').textContent = tagText;
-  document.getElementById('brandMark').textContent = (currentAccount.account_name||'GB').slice(0,2).toUpperCase();
-}
-
-async function ensureWidgetsConfig(){
-  if(!currentAccount.widgets_config || !currentAccount.widgets_config.length){
-    currentAccount.widgets_config = DEFAULT_WIDGETS.slice();
-    await sb.from('goldbook_accounts').update({widgets_config: currentAccount.widgets_config}).eq('id', currentAccount.id);
-  }
-}
-async function saveWidgetsConfig(){
-  await sb.from('goldbook_accounts').update({widgets_config: currentAccount.widgets_config}).eq('id', currentAccount.id);
-}
-
-/* ============================================================
-   Data layer (Supabase) — scoped to currentAccount
+   Data layer (Supabase)
 ============================================================ */
 function dbToTrade(r){
   return {
-    id:r.id, date:r.trade_date, time:r.trade_time, setup:r.setup, direction:r.direction,
-    symbol:r.symbol, entry:r.entry, sl:r.sl, tp:r.tp, entrynotes:r.entry_notes, result:r.result,
-    pnlr:r.pnlr, emotion:r.emotion, followed:r.followed, notes:r.notes,
+    id:r.id, date:r.trade_date, open_time:r.open_time, close_time:r.close_time, setup:r.setup, direction:r.direction,
+    fib:r.fib, symbol:r.symbol, entry:r.entry, sl:r.sl, tp:r.tp, result:r.result,
+    pnlr:r.pnlr, rr_tag:r.rr_tag, emotion:r.emotion, followed:r.followed, notes:r.notes,
   };
 }
 function dbToNote(r){ return {id:r.id, date:r.note_date, text:r.note_text}; }
 
-async function loadAccountData(){
-  await ensureWidgetsConfig();
-  const accId = currentAccount.id;
-  const [tRes, nRes, cRes, sRes] = await Promise.all([
-    sb.from('goldbook_trades').select('*').eq('account_id', accId).order('trade_date', {ascending:false}),
-    sb.from('goldbook_notes').select('*').eq('account_id', accId).order('created_at', {ascending:false}),
-    sb.from('goldbook_checklist').select('*').eq('account_id', accId).order('sort_order', {ascending:true}),
-    sb.from('goldbook_setups').select('*').eq('account_id', accId).order('name', {ascending:true}),
+async function loadAllData(){
+  const [tRes, nRes, cRes, sRes, rRes, aRes] = await Promise.all([
+    sb.from('goldbook_trades').select('*').order('trade_date', {ascending:false}),
+    sb.from('goldbook_notes').select('*').order('created_at', {ascending:false}),
+    sb.from('goldbook_checklist').select('*').order('sort_order', {ascending:true}),
+    sb.from('goldbook_setups').select('*').order('name', {ascending:true}),
+    sb.from('goldbook_rrtags').select('*').order('name', {ascending:true}),
+    sb.from('goldbook_account').select('*').eq('user_id', currentUser.id).maybeSingle(),
   ]);
   trades = (tRes.data||[]).map(dbToTrade);
   notes = (nRes.data||[]).map(dbToNote);
   checklist = (cRes.data||[]).map(r=>({id:r.id, text:r.item_text, done:r.done, sort_order:r.sort_order}));
   customSetups = sRes.data || [];
+  customRR = rRes.data || [];
+  if(aRes && aRes.data){
+    account = {starting_balance: parseFloat(aRes.data.starting_balance)||0, risk_percent: parseFloat(aRes.data.risk_percent)||1};
+  }
 }
+
+async function ensureDefaultChecklist(){
+  const { count } = await sb.from('goldbook_checklist').select('id', {count:'exact', head:true});
+  if(count && count>0) return;
+  const defaults = [
+    'Checked high-impact news calendar for today',
+    'Marked 5:30 AM IST candle high/low',
+    'Confirmed Asia & London session ranges',
+    'Position size calculated for 1% risk',
+    'No open trades from revenge/FOMO impulse',
+  ];
+  await sb.from('goldbook_checklist').insert(defaults.map((text,i)=>({item_text:text, done:false, sort_order:i})));
+}
+
+async function ensureAccountRow(){
+  const { data } = await sb.from('goldbook_account').select('id').eq('user_id', currentUser.id).maybeSingle();
+  if(data) return;
+  const payload = pendingAccountSetup
+    ? { user_id: currentUser.id, starting_balance: pendingAccountSetup.starting_balance, risk_percent: pendingAccountSetup.risk_percent }
+    : { user_id: currentUser.id, starting_balance: 0, risk_percent: 1 };
+  await sb.from('goldbook_account').insert(payload);
+  pendingAccountSetup = null;
+}
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 /* ============================================================
    Navigation
 ============================================================ */
 const titles = {
-  dashboard:['Dashboard','Your trading performance at a glance'],
-  addtrade:['Add Trade','Log a new entry'],
+  dashboard:['Dashboard','Your XAU/USD performance at a glance'],
+  addtrade:['Add Trade','Log a new entry from your session'],
   log:['Trade Log','Every trade, filterable and searchable'],
   reports:['Reports','Where your edge actually comes from'],
   notebook:['Notebook','Session reflections & checklist'],
-  settings:['Settings','Profile, theme, accounts, setups & data'],
+  settings:['Export / Import','Manage your data & custom setups'],
 };
 
 function showView(name){
@@ -1212,15 +1038,14 @@ function showView(name){
   document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.view===name));
   document.getElementById('pageTitle').textContent = titles[name][0];
-  document.getElementById('pageSub').textContent = currentAccount ? (currentAccount.journal_tag || titles[name][1]) : titles[name][1];
-  if(name!=='dashboard') stopForexClock();
+  document.getElementById('pageSub').textContent = titles[name][1];
   closeSidebarMobile();
   if(name==='dashboard') renderDashboard();
   if(name==='log') renderLog();
   if(name==='reports') renderReports();
   if(name==='notebook') renderNotebook();
   if(name==='settings') renderSettings();
-  if(name==='addtrade') renderAddTrade();
+  if(name==='addtrade'){ renderSetupRadios(); renderRRRadios(); }
 }
 document.querySelectorAll('.nav-item').forEach(n=>{
   n.addEventListener('click', ()=>showView(n.dataset.view));
@@ -1239,7 +1064,7 @@ document.getElementById('hamburger').addEventListener('click', ()=>{
 overlay.addEventListener('click', closeSidebarMobile);
 function closeSidebarMobile(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
 
-/* IST clock (sidebar) */
+/* IST clock */
 function tickClock(){
   const now = new Date();
   const ist = new Date(now.toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
@@ -1266,6 +1091,7 @@ function computeMetrics(list){
   const avgLoss = losses.length ? grossLoss/losses.length : 0;
   return {n,winRate,totalR,profitFactor,avgWin,avgLoss,wins:wins.length,losses:losses.length};
 }
+
 function sessionScore(list){
   const m = computeMetrics(list.slice(-30));
   if(m.n===0) return {score:0, parts:[]};
@@ -1282,6 +1108,36 @@ function sessionScore(list){
     ['R consistency', Math.round(consistency)],
   ]};
 }
+
+/* ============================================================
+   Dashboard
+============================================================ */
+let calMonth = new Date();
+
+function renderDashboard(){
+  const m = computeMetrics(trades);
+  const stats = [
+    {label:'Net P&L (R)', val:(m.totalR>=0?'+':'')+m.totalR.toFixed(2)+'R', cls: m.totalR>=0?'pos':'neg', foot:`${m.n} trades total`},
+    {label:'Win Rate', val:m.winRate.toFixed(1)+'%', cls:'gold', foot:`${m.wins}W / ${m.losses}L`},
+    {label:'Profit Factor', val: isFinite(m.profitFactor)? m.profitFactor.toFixed(2) : '∞', cls: m.profitFactor>=1.5?'pos':(m.profitFactor<1?'neg':''), foot:'gross win / gross loss'},
+    {label:'Avg Win / Loss', val: m.avgWin.toFixed(2)+'R / '+m.avgLoss.toFixed(2)+'R', cls:'', foot:'per trade, in R'},
+    {label:'Best Setup', val: bestSetup(), cls:'gold', foot:'by win rate, min. 5 trades'},
+    {label:'Account Balance', val: '$'+currentBalance().toFixed(2), cls: currentBalance()>=(parseFloat(account.starting_balance)||0)?'pos':'neg', foot:`Start $${(parseFloat(account.starting_balance)||0).toFixed(2)} · ${account.risk_percent}% risk/trade`},
+  ];
+  const row = document.getElementById('statsRow');
+  row.innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value ${s.cls}">${s.val}</div>
+      <div class="stat-foot">${s.foot}</div>
+    </div>`).join('');
+
+  renderEquityChart();
+  renderScoreRing();
+  renderCalendar();
+  renderRecentTrades();
+}
+
 function bestSetup(){
   const groups = {};
   trades.forEach(t=>{ (groups[t.setup]=groups[t.setup]||[]).push(t); });
@@ -1294,123 +1150,52 @@ function bestSetup(){
   return best ? best : '—';
 }
 
-/* ============================================================
-   Dashboard — customizable widget system
-============================================================ */
-let calMonth = new Date();
 let equityChartInst=null;
-let fxClockTimer=null;
-
-function renderDashboard(){
-  document.getElementById('noSetupsAlert').style.display = customSetups.length ? 'none' : 'flex';
-  const cfg = (currentAccount.widgets_config && currentAccount.widgets_config.length) ? currentAccount.widgets_config : DEFAULT_WIDGETS;
-  const wrap = document.getElementById('dashboardWidgets');
-  wrap.innerHTML = cfg.filter(w=>w.visible).map(w=>widgetShell(w.key)).join('');
-  cfg.filter(w=>w.visible).forEach(w=>mountWidget(w.key));
-}
-function widgetShell(key){
-  const wide = WIDGET_WIDE[key] ? 'wfull' : '';
-  const label = WIDGET_LABELS[key] || key;
-  if(key==='stats') return `<div class="${wide}" id="w-stats"></div>`;
-  if(key==='equity') return `<div class="panel ${wide}"><div class="panel-title" style="margin-bottom:12px;">Equity Curve<small>Cumulative R across all logged trades</small></div><canvas id="equityChart" height="110"></canvas></div>`;
-  if(key==='score') return `<div class="panel ${wide}"><div class="panel-title" style="margin-bottom:12px;">Session Score<small>Discipline · consistency · edge</small></div><div id="scoreBody"></div></div>`;
-  if(key==='forexclock') return `<div class="panel ${wide}"><div class="panel-title" style="margin-bottom:12px;">Forex Sessions<small>Sydney · Tokyo · London · New York (IST)</small></div><div id="fxclockRoot"></div></div>`;
-  if(key==='calendar') return `<div class="panel ${wide}">
-      <div class="cal-head"><div class="panel-title" id="calTitle">This Month<small>Daily P&amp;L by day</small></div>
-      <div class="cal-nav"><button id="calPrev">‹</button><button id="calNext">›</button></div></div>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="cal-legend">
-        <span><span class="legend-dot" style="background:color-mix(in srgb, var(--green) 40%, transparent)"></span>Winning day</span>
-        <span><span class="legend-dot" style="background:color-mix(in srgb, var(--red) 40%, transparent)"></span>Losing day</span>
-        <span><span class="legend-dot" style="background:var(--surface-2); border:1px solid var(--border)"></span>No trades</span>
-      </div></div>`;
-  if(key==='recent') return `<div class="panel ${wide}">
-      <div class="panel-head"><div class="panel-title">Recent Trades<small>Last 8 entries</small></div>
-      <span class="small-mute" style="cursor:pointer; color:var(--gold);" data-goto="log">View all →</span></div>
-      <div class="table-scroll" id="recentTradesWrap"></div></div>`;
-  return '';
-}
-function mountWidget(key){
-  if(key==='stats') renderStatsWidget();
-  if(key==='equity') renderEquityChart();
-  if(key==='score') renderScoreWidget();
-  if(key==='forexclock') mountForexClock();
-  if(key==='calendar') renderCalendar();
-  if(key==='recent') renderRecentTrades();
-}
-
-function renderStatsWidget(){
-  const m = computeMetrics(trades);
-  const stats = [
-    {label:'Net P&L (R)', val:(m.totalR>=0?'+':'')+m.totalR.toFixed(2)+'R', cls: m.totalR>=0?'pos':'neg', foot:`${m.n} trades total`},
-    {label:'Win Rate', val:m.winRate.toFixed(1)+'%', cls:'gold', foot:`${m.wins}W / ${m.losses}L`},
-    {label:'Profit Factor', val: isFinite(m.profitFactor)? m.profitFactor.toFixed(2) : '∞', cls: m.profitFactor>=1.5?'pos':(m.profitFactor<1?'neg':''), foot:'gross win / gross loss'},
-    {label:'Avg Win / Loss', val: m.avgWin.toFixed(2)+'R / '+m.avgLoss.toFixed(2)+'R', cls:'', foot:'per trade, in R'},
-    {label:'Best Setup', val: bestSetup(), cls:'gold', foot:'by win rate, min. 5 trades'},
-  ];
-  document.getElementById('w-stats').innerHTML = `<div class="stats-row">` + stats.map(s=>`
-    <div class="stat-card">
-      <div class="stat-label">${s.label}</div>
-      <div class="stat-value ${s.cls}">${s.val}</div>
-      <div class="stat-foot">${s.foot}</div>
-    </div>`).join('') + `</div>`;
-}
-
 function renderEquityChart(){
   const ctx = document.getElementById('equityChart');
-  if(!ctx) return;
   let cum=0;
   const sorted = [...trades].sort((a,b)=>new Date(a.date)-new Date(b.date));
   const data = [0, ...sorted.map(t=>cum+=(parseFloat(t.pnlr)||0))];
   const labels = data.map((_,i)=>i);
   if(equityChartInst) equityChartInst.destroy();
-  const styles = getComputedStyle(document.documentElement);
   equityChartInst = new Chart(ctx, {
     type:'line',
     data:{labels, datasets:[{
-      data, borderColor:styles.getPropertyValue('--accent').trim()||'#D4AF6A',
-      backgroundColor:'rgba(212,175,106,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:2,
+      data, borderColor:'#D4AF6A', backgroundColor:'rgba(212,175,106,0.08)',
+      fill:true, tension:0.3, pointRadius:0, borderWidth:2,
     }]},
     options:{
       responsive:true,
       plugins:{legend:{display:false}},
-      scales:{ x:{display:false}, y:{grid:{color:styles.getPropertyValue('--border').trim()}, ticks:{color:styles.getPropertyValue('--text-mute').trim(), font:{family:'IBM Plex Mono', size:10}}} }
+      scales:{
+        x:{display:false},
+        y:{grid:{color:'#242931'}, ticks:{color:'#8B8F98', font:{family:'IBM Plex Mono', size:10}}}
+      }
     }
   });
 }
 
-function renderScoreWidget(){
-  const target = document.getElementById('scoreBody');
-  if(!target) return;
+function renderScoreRing(){
   const {score, parts} = sessionScore(trades);
   const circumference = 2*Math.PI*38;
   const offset = circumference - (score/100)*circumference;
-  target.innerHTML = `
-    <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-      <div class="ring-wrap" style="width:90px; height:90px;">
-        <svg width="90" height="90" viewBox="0 0 90 90">
-          <circle class="ring-bg" cx="45" cy="45" r="38"></circle>
-          <circle class="ring-fg" cx="45" cy="45" r="38" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
-        </svg>
-        <div class="ring-num" style="font-size:20px;">${score}</div>
-      </div>
-      <div style="flex:1; min-width:160px;">
-        <div class="small-mute" style="margin-bottom:8px;">Based on win rate, profit factor, and R consistency of your last 30 trades.</div>
-        <div style="display:flex; flex-direction:column; gap:6px;">
-          ${parts.map(([label,val])=>`<div style="display:flex; justify-content:space-between; font-size:11.5px;"><span class="small-mute">${label}</span><span style="font-family:var(--mono); color:var(--text);">${val}</span></div>`).join('') || '<div class="small-mute">Log trades to see your score.</div>'}
-        </div>
-      </div>
-    </div>`;
+  const ring = document.getElementById('scoreRing');
+  ring.setAttribute('stroke-dasharray', circumference);
+  ring.setAttribute('stroke-dashoffset', offset);
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('scoreBreakdown').innerHTML = parts.map(([label,val])=>`
+    <div style="display:flex; justify-content:space-between; font-size:11.5px;">
+      <span class="small-mute">${label}</span><span style="font-family:var(--mono); color:var(--text);">${val}</span>
+    </div>`).join('') || '<div class="small-mute">Log trades to see your score.</div>';
 }
 
 function renderCalendar(){
-  const grid = document.getElementById('calGrid');
-  if(!grid) return;
   const y = calMonth.getFullYear(), mo = calMonth.getMonth();
-  document.getElementById('calTitle').innerHTML = calMonth.toLocaleString('default',{month:'long', year:'numeric'})+'<small>Daily P&L by day</small>';
+  document.getElementById('calTitle').innerHTML = calMonth.toLocaleString('default',{month:'long', year:'numeric'})+'<small>Daily P&L by IST session</small>';
   const first = new Date(y,mo,1);
   const startDow = first.getDay();
   const daysInMonth = new Date(y,mo+1,0).getDate();
+
   const dayMap = {};
   trades.forEach(t=>{
     const d = new Date(t.date);
@@ -1420,36 +1205,41 @@ function renderCalendar(){
       dayMap[key].push(t);
     }
   });
+
   let html = ['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
   for(let i=0;i<startDow;i++) html += `<div class="cal-cell empty"></div>`;
   for(let d=1; d<=daysInMonth; d++){
     const dayTrades = dayMap[d];
-    if(!dayTrades){ html += `<div class="cal-cell"><span class="cal-day">${d}</span></div>`; }
-    else {
+    if(!dayTrades){
+      html += `<div class="cal-cell"><span class="cal-day">${d}</span></div>`;
+    } else {
       const r = dayTrades.reduce((s,t)=>s+(parseFloat(t.pnlr)||0),0);
       const cls = r>=0?'win':'loss';
       html += `<div class="cal-cell ${cls}" data-day="${d}"><span class="cal-day">${d}</span><span class="cal-r">${r>=0?'+':''}${r.toFixed(1)}R</span></div>`;
     }
   }
-  grid.innerHTML = html;
+  document.getElementById('calGrid').innerHTML = html;
+
   document.querySelectorAll('.cal-cell[data-day]').forEach(cell=>{
     cell.style.cursor='pointer';
-    cell.addEventListener('click', ()=>{ const day = cell.dataset.day; openDayModal(y,mo,day, dayMap[day]); });
+    cell.addEventListener('click', ()=>{
+      const day = cell.dataset.day;
+      openDayModal(y,mo,day, dayMap[day]);
+    });
   });
-  const prevBtn = document.getElementById('calPrev'), nextBtn = document.getElementById('calNext');
-  if(prevBtn) prevBtn.onclick = ()=>{calMonth.setMonth(calMonth.getMonth()-1); renderCalendar();};
-  if(nextBtn) nextBtn.onclick = ()=>{calMonth.setMonth(calMonth.getMonth()+1); renderCalendar();};
 }
+document.getElementById('calPrev').addEventListener('click', ()=>{calMonth.setMonth(calMonth.getMonth()-1); renderCalendar();});
+document.getElementById('calNext').addEventListener('click', ()=>{calMonth.setMonth(calMonth.getMonth()+1); renderCalendar();});
 
 function openDayModal(y,mo,day,list){
   document.getElementById('dayModalTitle').textContent = new Date(y,mo,day).toDateString();
   document.getElementById('dayModalBody').innerHTML = list.map(t=>`
     <div style="padding:8px 0; border-bottom:1px solid var(--border); font-size:12.5px;">
       <div style="display:flex; justify-content:space-between;">
-        <span class="tag setup">${escapeHtml(t.setup||'')}</span>
+        <span class="tag setup">${t.setup}</span>
         <span class="${(parseFloat(t.pnlr)||0)>=0?'pnl-pos':'pnl-neg'}">${t.pnlr}R</span>
       </div>
-      <div class="small-mute" style="margin-top:4px;">${escapeHtml(t.direction||'')} · ${escapeHtml(t.symbol||'')} · Entry ${t.entry} · ${t.result}</div>
+      <div class="small-mute" style="margin-top:4px;">${t.direction} · Entry ${t.entry} · ${t.result}</div>
     </div>`).join('');
   document.getElementById('dayModalBg').classList.add('open');
 }
@@ -1457,197 +1247,85 @@ document.getElementById('dayModalClose').addEventListener('click', ()=>document.
 document.getElementById('dayModalBg').addEventListener('click', e=>{ if(e.target.id==='dayModalBg') e.target.classList.remove('open'); });
 
 function renderRecentTrades(){
-  const target = document.getElementById('recentTradesWrap');
-  if(!target) return;
   const recent = [...trades].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,8);
-  target.innerHTML = tradesTable(recent, false);
+  document.getElementById('recentTradesWrap').innerHTML = tradesTable(recent, false);
+  wireTradeRowClicks('recentTradesWrap');
 }
 
-/* ============================================================
-   Forex Sessions Clock widget (mount / unmount lifecycle)
-============================================================ */
-function fxClockTemplate(){
-  return `
-  <div class="fxclock">
-    <div class="fx-header">
-      <div class="fx-ist-label">India Standard Time</div>
-      <div class="fx-ist-time"><span id="fx-hm">--:--</span><span class="fx-seconds" id="fx-s">:--</span></div>
-      <div class="fx-ist-date" id="fx-date">—</div>
-    </div>
-    <div class="fx-active-banner" id="fx-banner"></div>
-    <div class="fx-timeline-wrap">
-      <div class="fx-tl-label">24h Session Map (IST)</div>
-      <div class="fx-timeline" id="fx-timeline"><div class="fx-tl-needle" id="fx-needle"></div></div>
-      <div class="fx-tl-hours"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div>
-    </div>
-    <div class="fx-sessions-grid">
-      <div class="fx-card sydney" id="fx-card-sydney"><div class="fx-sc-top"><span class="fx-sc-icon">🌊</span><span class="fx-sc-dot"></span></div>
-        <div class="fx-sc-name">SYDNEY</div><div class="fx-sc-local-time" id="fx-time-sydney">--:--</div>
-        <div class="fx-sc-ist-range">2:30 AM – 11:30 AM IST</div>
-        <div class="fx-sc-progress"><div class="fx-sc-progress-fill" id="fx-prog-sydney"></div></div>
-        <div class="fx-sc-status" id="fx-status-sydney">—</div></div>
-      <div class="fx-card tokyo" id="fx-card-tokyo"><div class="fx-sc-top"><span class="fx-sc-icon">🗼</span><span class="fx-sc-dot"></span></div>
-        <div class="fx-sc-name">TOKYO</div><div class="fx-sc-local-time" id="fx-time-tokyo">--:--</div>
-        <div class="fx-sc-ist-range">5:30 AM – 2:30 PM IST</div>
-        <div class="fx-sc-progress"><div class="fx-sc-progress-fill" id="fx-prog-tokyo"></div></div>
-        <div class="fx-sc-status" id="fx-status-tokyo">—</div></div>
-      <div class="fx-card london" id="fx-card-london"><div class="fx-sc-top"><span class="fx-sc-icon">🏛</span><span class="fx-sc-dot"></span></div>
-        <div class="fx-sc-name">LONDON</div><div class="fx-sc-local-time" id="fx-time-london">--:--</div>
-        <div class="fx-sc-ist-range">12:30 PM – 9:30 PM IST</div>
-        <div class="fx-sc-progress"><div class="fx-sc-progress-fill" id="fx-prog-london"></div></div>
-        <div class="fx-sc-status" id="fx-status-london">—</div></div>
-      <div class="fx-card newyork" id="fx-card-newyork"><div class="fx-sc-top"><span class="fx-sc-icon">🗽</span><span class="fx-sc-dot"></span></div>
-        <div class="fx-sc-name">NEW YORK</div><div class="fx-sc-local-time" id="fx-time-newyork">--:--</div>
-        <div class="fx-sc-ist-range">5:30 PM – 2:30 AM IST</div>
-        <div class="fx-sc-progress"><div class="fx-sc-progress-fill" id="fx-prog-newyork"></div></div>
-        <div class="fx-sc-status" id="fx-status-newyork">—</div></div>
-    </div>
-    <div class="fx-overlap-badge" id="fx-overlap">⚡ London–NY Overlap Active · 5:30 PM – 9:30 PM IST</div>
-    <div class="fx-footer">All times in IST · GoldBook Forex Clock</div>
-  </div>`;
-}
-const FX_DAY = 1440;
-const FX_SESSIONS = {
-  sydney:  { start: 2*60+30,  end: 11*60+30, tz:'Australia/Sydney', name:'Sydney',   color:'#22D3A0' },
-  tokyo:   { start: 5*60+30,  end: 14*60+30, tz:'Asia/Tokyo',        name:'Tokyo',    color:'#A78BFA' },
-  london:  { start: 12*60+30, end: 21*60+30, tz:'Europe/London',    name:'London',   color:'#F59E0B' },
-  newyork: { start: 17*60+30, end: 26*60+30, tz:'America/New_York', name:'New York', color:'#F87171' },
-};
-const FX_OVERLAP = { start: 17*60+30, end: 21*60+30 };
-function fxIsActive(s, nowMin){ const {start,end}=s; return end<=FX_DAY ? (nowMin>=start && nowMin<end) : (nowMin>=start || nowMin<(end-FX_DAY)); }
-function fxProgress(s, nowMin){ const {start,end}=s; const duration=end-start; let elapsed; if(end<=FX_DAY){elapsed=nowMin-start;} else { elapsed = nowMin>=start ? nowMin-start : (FX_DAY-start)+nowMin; } return Math.min(Math.max(elapsed/duration,0),1); }
-function fxUntilStart(s, nowMin){ return s.start>nowMin ? s.start-nowMin : FX_DAY-nowMin+s.start; }
-function fxUntilEnd(s, nowMin){ const {start,end}=s; if(end<=FX_DAY) return end-nowMin; return nowMin>=start ? end-nowMin : (end-FX_DAY)-nowMin; }
-function fxFormatDur(mins){ mins=Math.abs(Math.round(mins)); const h=Math.floor(mins/60), m=mins%60; return h>0 ? `${h}h ${m}m` : `${m}m`; }
-function fxTimeInZone(tz){ try{ return new Date().toLocaleTimeString('en-US',{timeZone:tz, hour:'2-digit', minute:'2-digit', hour12:false}); }catch(e){ return '--:--'; } }
-function fxGetISTDate(){ const now=new Date(); const utcMs=now.getTime()+now.getTimezoneOffset()*60000; return new Date(utcMs+330*60000); }
-function fxBuildTimeline(){
-  const tl = document.getElementById('fx-timeline'); if(!tl) return;
-  tl.querySelectorAll('.fx-tl-seg').forEach(el=>el.remove());
-  const segs = [
-    {key:'sydney', s:2*60+30, e:11*60+30, top:0},
-    {key:'tokyo', s:5*60+30, e:14*60+30, top:25},
-    {key:'london', s:12*60+30, e:21*60+30, top:50},
-    {key:'newyork', s:17*60+30, e:24*60, top:75},
-    {key:'newyork2', s:0, e:2*60+30, top:75},
-  ];
-  const needle = document.getElementById('fx-needle');
-  segs.forEach(seg=>{
-    const pctS=(seg.s/FX_DAY)*100, pctE=(seg.e/FX_DAY)*100;
-    const el = document.createElement('div');
-    el.className = `fx-tl-seg ${seg.key.replace('2','')}`;
-    el.style.background = `var(--fx-${seg.key.replace('2','')})`;
-    el.style.left = pctS+'%'; el.style.width=(pctE-pctS)+'%'; el.style.top=seg.top+'%'; el.style.height='25%';
-    el.dataset.key = seg.key;
-    tl.insertBefore(el, needle);
+/* wire up row clicks -> open trade detail modal (skips clicks on the delete icon) */
+function wireTradeRowClicks(containerId){
+  document.querySelectorAll('#'+containerId+' tr[data-tradeid]').forEach(row=>{
+    row.addEventListener('click', e=>{
+      if(e.target.closest('[data-del]')) return;
+      const t = trades.find(x=>String(x.id)===row.dataset.tradeid);
+      if(t) openTradeModal(t);
+    });
   });
 }
-function fxTick(){
-  const root = document.getElementById('fxclockRoot');
-  if(!root || !root.querySelector('.fxclock')){ stopForexClock(); return; }
-  const istDate = fxGetISTDate();
-  const h=istDate.getHours(), m=istDate.getMinutes(), s=istDate.getSeconds();
-  const nowMin = h*60+m+s/60;
-  document.getElementById('fx-hm').textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-  document.getElementById('fx-s').textContent = ':'+String(s).padStart(2,'0');
-  document.getElementById('fx-date').textContent = istDate.toLocaleDateString('en-IN',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
-  const needle = document.getElementById('fx-needle');
-  if(needle) needle.style.left = (nowMin/FX_DAY*100)+'%';
-  document.querySelectorAll('.fx-tl-seg').forEach(el=>{
-    const base = el.dataset.key.replace('2','');
-    el.style.opacity = fxIsActive(FX_SESSIONS[base], nowMin) ? '1' : '0.35';
-  });
-  let activeSessions = [];
-  Object.entries(FX_SESSIONS).forEach(([key,sess])=>{
-    const card = document.getElementById('fx-card-'+key);
-    const progEl = document.getElementById('fx-prog-'+key);
-    const statusEl = document.getElementById('fx-status-'+key);
-    const timeEl = document.getElementById('fx-time-'+key);
-    if(!card) return;
-    const active = fxIsActive(sess, nowMin);
-    if(active) activeSessions.push(sess.name);
-    card.classList.toggle('active', active);
-    timeEl.textContent = fxTimeInZone(sess.tz);
-    timeEl.style.color = active ? sess.color : '';
-    if(active){
-      progEl.style.width = (fxProgress(sess,nowMin)*100).toFixed(1)+'%';
-      statusEl.textContent = '⏳ ' + fxFormatDur(fxUntilEnd(sess,nowMin)) + ' remaining';
-    } else {
-      progEl.style.width='0%';
-      statusEl.textContent = 'Opens in ' + fxFormatDur(fxUntilStart(sess,nowMin));
-    }
-  });
-  const banner = document.getElementById('fx-banner');
-  if(activeSessions.length>0){
-    const colors = {Sydney:'#22D3A0', Tokyo:'#A78BFA', London:'#F59E0B', 'New York':'#F87171'};
-    const main = colors[activeSessions[0]] || '#D4AF6A';
-    banner.className = 'fx-active-banner show';
-    banner.style.color = main;
-    banner.style.background = main+'14'; banner.style.border = `1px solid ${main}40`;
-    banner.textContent = '● ' + activeSessions.join(' + ') + (activeSessions.length>1 ? ' sessions OPEN' : ' session OPEN');
-  } else { banner.className = 'fx-active-banner'; banner.textContent=''; }
-  const overlapActive = nowMin>=FX_OVERLAP.start && nowMin<FX_OVERLAP.end;
-  document.getElementById('fx-overlap').classList.toggle('show', overlapActive);
-}
-function mountForexClock(){
-  const root = document.getElementById('fxclockRoot');
-  if(!root) return;
-  root.innerHTML = fxClockTemplate();
-  fxBuildTimeline();
-  fxTick();
-  if(fxClockTimer) clearInterval(fxClockTimer);
-  fxClockTimer = setInterval(fxTick, 1000);
-}
-function stopForexClock(){ if(fxClockTimer){ clearInterval(fxClockTimer); fxClockTimer=null; } }
 
 /* ============================================================
    Trade table renderer (shared)
 ============================================================ */
 function tradesTable(list, withDelete){
   if(!list.length) return `<div class="empty-state"><div class="es-icon">◇</div><div class="es-title">No trades yet</div><div>Log your first trade to see it here.</div></div>`;
+  const balMap = computeBalanceMap();
   const rows = list.map(t=>`
-    <tr>
+    <tr data-tradeid="${t.id}" style="cursor:pointer;">
       <td>${fmtDate(t.date)}</td>
-      <td><span class="tag setup">${escapeHtml(t.setup||'')}</span></td>
-      <td>${escapeHtml(t.symbol||'—')}</td>
-      <td>${escapeHtml(t.direction||'')}</td>
-      <td style="font-family:var(--mono);">${t.entry ?? '—'}</td>
+      <td><span class="tag setup">${t.setup}</span></td>
+      <td>${t.direction}</td>
+      <td style="font-family:var(--mono);">${t.entry}</td>
       <td>${resultPill(t.result)}</td>
       <td class="${(parseFloat(t.pnlr)||0)>=0?'pnl-pos':'pnl-neg'}">${t.pnlr!==''&&t.pnlr!==undefined&&t.pnlr!==null?(parseFloat(t.pnlr)>=0?'+':'')+t.pnlr+'R':'–'}</td>
-      <td><span class="tag">${escapeHtml(t.emotion||'–')}</span></td>
+      <td><span class="tag">${t.rr_tag||'–'}</span></td>
+      <td><span class="tag">${t.emotion||'–'}</span></td>
+      <td style="font-family:var(--mono);">$${(balMap[t.id]!==undefined?balMap[t.id]:account.starting_balance).toFixed(2)}</td>
       ${withDelete?`<td class="row-del" data-del="${t.id}">✕</td>`:''}
     </tr>`).join('');
   return `<table>
-    <thead><tr><th>Date</th><th>Setup</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Result</th><th>P&amp;L</th><th>Emotion</th>${withDelete?'<th></th>':''}</tr></thead>
+    <thead><tr><th>Date</th><th>Setup</th><th>Dir</th><th>Entry</th><th>Result</th><th>P&amp;L</th><th>R:R</th><th>Emotion</th><th>Balance</th>${withDelete?'<th></th>':''}</tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
+}
+
+/* running account balance, compounded per trade using stored risk % */
+function computeBalanceMap(){
+  const map = {};
+  const sorted = [...trades].sort((a,b)=> new Date(a.date+'T'+(a.open_time||'00:00')) - new Date(b.date+'T'+(b.open_time||'00:00')));
+  let bal = parseFloat(account.starting_balance)||0;
+  const riskPct = parseFloat(account.risk_percent)||0;
+  sorted.forEach(t=>{
+    bal = bal * (1 + ((parseFloat(t.pnlr)||0) * riskPct/100));
+    map[t.id] = bal;
+  });
+  return map;
+}
+function currentBalance(){
+  const sorted = [...trades].sort((a,b)=> new Date(a.date+'T'+(a.open_time||'00:00')) - new Date(b.date+'T'+(b.open_time||'00:00')));
+  let bal = parseFloat(account.starting_balance)||0;
+  const riskPct = parseFloat(account.risk_percent)||0;
+  sorted.forEach(t=>{ bal = bal * (1 + ((parseFloat(t.pnlr)||0) * riskPct/100)); });
+  return bal;
 }
 function resultPill(r){
   if(r==='Win') return `<span class="pill-win">Win</span>`;
   if(r==='Loss') return `<span class="pill-loss">Loss</span>`;
   return `<span class="pill-be">BE</span>`;
 }
-function fmtDate(d){ const dt=new Date(d); return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}); }
-function escapeHtml(s){ return (s||'').toString().replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtDate(d){
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
+}
 
 /* ============================================================
    Add Trade form
 ============================================================ */
-function renderAddTrade(){
-  const blocked = customSetups.length===0;
-  document.getElementById('addTradeBlocked').style.display = blocked ? 'flex' : 'none';
-  document.getElementById('tradeSubmitBtn').disabled = blocked;
-  document.getElementById('tradeForm').style.opacity = blocked ? 0.45 : 1;
-  document.getElementById('tradeForm').style.pointerEvents = blocked ? 'none' : 'auto';
-  renderSetupRadios();
-  document.getElementById('f_date').valueAsDate = new Date();
-}
 function renderSetupRadios(){
   const wrap = document.getElementById('setupRadios');
   wrap.innerHTML = allSetups().map((s,i)=>`
-    <label class="setup-radio" data-name="${escapeHtml(s)}">
-      <input type="radio" name="setup" value="${escapeHtml(s)}" ${i===0?'checked':''}>
-      ${escapeHtml(s)}
+    <label class="setup-radio" data-name="${s}">
+      <input type="radio" name="setup" value="${s}" ${i===0?'checked':''}>
+      ${s}
     </label>`).join('');
   document.querySelectorAll('.setup-radio').forEach(el=>{
     el.addEventListener('click', ()=>{
@@ -1657,6 +1335,25 @@ function renderSetupRadios(){
     });
   });
   const first = document.querySelector('.setup-radio');
+  if(first) first.classList.add('checked');
+  document.getElementById('f_date').valueAsDate = new Date();
+}
+
+function renderRRRadios(){
+  const wrap = document.getElementById('rrRadios');
+  wrap.innerHTML = allRR().map((s,i)=>`
+    <label class="setup-radio" data-name="${s}">
+      <input type="radio" name="rrtag" value="${s}" ${i===0?'checked':''}>
+      ${s}
+    </label>`).join('');
+  wrap.querySelectorAll('.setup-radio').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      wrap.querySelectorAll('.setup-radio').forEach(e=>e.classList.remove('checked'));
+      el.classList.add('checked');
+      el.querySelector('input').checked = true;
+    });
+  });
+  const first = wrap.querySelector('.setup-radio');
   if(first) first.classList.add('checked');
 }
 
@@ -1680,25 +1377,26 @@ function calcRR(){
 
 document.getElementById('tradeForm').addEventListener('submit', async e=>{
   e.preventDefault();
-  if(!customSetups.length){ alert('Add a setup in Settings first.'); return; }
   const setupEl = document.querySelector('input[name=setup]:checked');
+  const rrEl = document.querySelector('input[name=rrtag]:checked');
   const emoEl = document.querySelector('.emo-chip.checked');
   const submitBtn = e.target.querySelector('button[type=submit]');
   submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
   const row = {
     user_id: currentUser.id,
-    account_id: currentAccount.id,
     trade_date: document.getElementById('f_date').value || new Date().toISOString().slice(0,10),
-    trade_time: document.getElementById('f_time').value || null,
+    open_time: document.getElementById('f_open_time').value || null,
+    close_time: document.getElementById('f_close_time').value || null,
     setup: setupEl ? setupEl.value : allSetups()[0],
     direction: document.getElementById('f_direction').value,
-    symbol: document.getElementById('f_symbol').value || null,
+    fib: document.getElementById('f_fib').value,
+    symbol: document.getElementById('f_symbol').value || 'XAU/USD',
     entry: document.getElementById('f_entry').value || null,
     sl: document.getElementById('f_sl').value || null,
     tp: document.getElementById('f_tp').value || null,
-    entry_notes: document.getElementById('f_entrynotes').value || null,
     result: document.getElementById('f_result').value,
     pnlr: document.getElementById('f_pnlr').value || null,
+    rr_tag: rrEl ? rrEl.value : allRR()[0],
     emotion: emoEl ? emoEl.dataset.emo : '',
     followed: document.getElementById('f_followed').value,
     notes: document.getElementById('f_notes').value,
@@ -1709,7 +1407,8 @@ document.getElementById('tradeForm').addEventListener('submit', async e=>{
   trades.unshift(dbToTrade(data));
   e.target.reset();
   document.querySelectorAll('.emo-chip').forEach(c=>c.classList.remove('checked'));
-  renderAddTrade();
+  renderSetupRadios();
+  renderRRRadios();
   document.getElementById('rrLive').textContent='–';
   showView('dashboard');
 });
@@ -1719,9 +1418,12 @@ document.getElementById('tradeForm').addEventListener('submit', async e=>{
 ============================================================ */
 function populateFilterSetups(){
   const sel = document.getElementById('filterSetup');
-  sel.innerHTML = '<option value="">All Setups</option>' + allSetups().map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  sel.innerHTML = '<option value="">All Setups</option>' + allSetups().map(s=>`<option value="${s}">${s}</option>`).join('');
 }
-function renderLog(){ populateFilterSetups(); applyLogFilters(); }
+function renderLog(){
+  populateFilterSetups();
+  applyLogFilters();
+}
 function applyLogFilters(){
   const setup = document.getElementById('filterSetup').value;
   const result = document.getElementById('filterResult').value;
@@ -1732,15 +1434,154 @@ function applyLogFilters(){
   if(search) list = list.filter(t=>(t.notes||'').toLowerCase().includes(search));
   document.getElementById('logTableWrap').innerHTML = tradesTable(list, true);
   document.querySelectorAll('[data-del]').forEach(el=>{
-    el.addEventListener('click', async ()=>{
+    el.addEventListener('click', async e=>{
+      e.stopPropagation();
       const id = el.dataset.del;
+      if(!confirm('Delete this trade?')) return;
       const { error } = await sb.from('goldbook_trades').delete().eq('id', id);
       if(error){ alert('Could not delete: ' + error.message); return; }
       trades = trades.filter(t=>t.id!==id);
       applyLogFilters();
     });
   });
+  wireTradeRowClicks('logTableWrap');
 }
+
+/* ============================================================
+   Trade Detail / Edit modal
+============================================================ */
+const tradeModalBg = document.getElementById('tradeModalBg');
+let tradeModalCurrent = null;
+
+function openTradeModal(t){
+  tradeModalCurrent = t;
+  document.getElementById('tradeModalTitle').textContent = fmtDate(t.date) + ' · ' + t.setup;
+  document.getElementById('tradeModalEditBtn').textContent = 'Edit';
+  renderTradeView(t);
+  tradeModalBg.classList.add('open');
+}
+function renderTradeView(t){
+  const rows = [
+    ['Date', fmtDate(t.date)],
+    ['Open Time', t.open_time||'–'],
+    ['Close Time', t.close_time||'–'],
+    ['Setup', t.setup],
+    ['Direction', t.direction],
+    ['Fib Level', t.fib||'–'],
+    ['Symbol', t.symbol||'–'],
+    ['Entry', t.entry||'–'],
+    ['Stop Loss', t.sl||'–'],
+    ['Target', t.tp||'–'],
+    ['Result', t.result],
+    ['P&L (R)', t.pnlr!==null&&t.pnlr!==undefined&&t.pnlr!==''?t.pnlr+'R':'–'],
+    ['Risk:Reward Tag', t.rr_tag||'–'],
+    ['Emotional State', t.emotion||'–'],
+    ['Followed Plan', t.followed||'–'],
+  ];
+  document.getElementById('tradeModalBody').innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; font-size:12.5px;">
+      ${rows.map(([l,v])=>`<div class="small-mute">${l}</div><div style="text-align:right;">${v}</div>`).join('')}
+    </div>
+    ${t.notes ? `<div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+      <div class="small-mute" style="margin-bottom:6px;">Notes</div>
+      <div style="font-size:13px; white-space:pre-wrap;">${escapeHtml(t.notes)}</div>
+    </div>` : ''}`;
+}
+function renderTradeEditForm(t){
+  document.getElementById('tradeModalBody').innerHTML = `
+    <div class="grid-3">
+      <div class="field"><label>Date</label><input type="date" id="e_date" value="${t.date||''}"></div>
+      <div class="field"><label>Open Time</label><input type="time" id="e_open_time" value="${t.open_time||''}"></div>
+      <div class="field"><label>Close Time</label><input type="time" id="e_close_time" value="${t.close_time||''}"></div>
+    </div>
+    <div class="field"><label>Setup</label>
+      <select id="e_setup">${allSetups().map(s=>`<option value="${s}" ${s===t.setup?'selected':''}>${s}</option>`).join('')}</select>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Direction</label>
+        <select id="e_direction"><option ${t.direction==='Long'?'selected':''}>Long</option><option ${t.direction==='Short'?'selected':''}>Short</option></select>
+      </div>
+      <div class="field"><label>Symbol</label><input type="text" id="e_symbol" value="${t.symbol||''}"></div>
+      <div class="field"><label>Fib Level</label><input type="text" id="e_fib" value="${t.fib||''}"></div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Entry</label><input type="number" step="0.01" id="e_entry" value="${t.entry||''}"></div>
+      <div class="field"><label>Stop Loss</label><input type="number" step="0.01" id="e_sl" value="${t.sl||''}"></div>
+      <div class="field"><label>Target</label><input type="number" step="0.01" id="e_tp" value="${t.tp||''}"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Result</label>
+        <select id="e_result">${['Win','Loss','Breakeven'].map(r=>`<option ${r===t.result?'selected':''}>${r}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>P&amp;L (R)</label><input type="number" step="0.01" id="e_pnlr" value="${t.pnlr!==null&&t.pnlr!==undefined?t.pnlr:''}"></div>
+    </div>
+    <div class="field"><label>Risk:Reward Tag</label>
+      <select id="e_rrtag">${allRR().map(r=>`<option value="${r}" ${r===t.rr_tag?'selected':''}>${r}</option>`).join('')}</select>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Emotional State</label>
+        <select id="e_emotion">${['Calm','Confident','Anxious','FOMO','Revenge','Impatient'].map(x=>`<option ${x===t.emotion?'selected':''}>${x}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Followed Plan?</label>
+        <select id="e_followed">${['Yes','No','Partial'].map(x=>`<option ${x===t.followed?'selected':''}>${x}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="e_notes" rows="4">${t.notes||''}</textarea></div>
+    <div style="display:flex; gap:10px;">
+      <button type="button" class="btn btn-primary" id="tradeSaveBtn">Save Changes</button>
+    </div>`;
+  document.getElementById('tradeSaveBtn').addEventListener('click', saveTradeEdit);
+}
+document.getElementById('tradeModalEditBtn').addEventListener('click', ()=>{
+  if(!tradeModalCurrent) return;
+  const editBtn = document.getElementById('tradeModalEditBtn');
+  if(editBtn.textContent === 'Edit'){
+    renderTradeEditForm(tradeModalCurrent);
+    editBtn.textContent = 'Cancel';
+  } else {
+    renderTradeView(tradeModalCurrent);
+    editBtn.textContent = 'Edit';
+  }
+});
+async function saveTradeEdit(){
+  const t = tradeModalCurrent;
+  const saveBtn = document.getElementById('tradeSaveBtn');
+  saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+  const updates = {
+    trade_date: document.getElementById('e_date').value,
+    open_time: document.getElementById('e_open_time').value || null,
+    close_time: document.getElementById('e_close_time').value || null,
+    setup: document.getElementById('e_setup').value,
+    direction: document.getElementById('e_direction').value,
+    symbol: document.getElementById('e_symbol').value,
+    fib: document.getElementById('e_fib').value,
+    entry: document.getElementById('e_entry').value || null,
+    sl: document.getElementById('e_sl').value || null,
+    tp: document.getElementById('e_tp').value || null,
+    result: document.getElementById('e_result').value,
+    pnlr: document.getElementById('e_pnlr').value || null,
+    rr_tag: document.getElementById('e_rrtag').value,
+    emotion: document.getElementById('e_emotion').value,
+    followed: document.getElementById('e_followed').value,
+    notes: document.getElementById('e_notes').value,
+  };
+  const { data, error } = await sb.from('goldbook_trades').update(updates).eq('id', t.id).select().single();
+  saveBtn.disabled = false; saveBtn.textContent = 'Save Changes';
+  if(error){ alert('Could not save changes: ' + error.message); return; }
+  const updated = dbToTrade(data);
+  trades = trades.map(x=>x.id===t.id ? updated : x);
+  tradeModalCurrent = updated;
+  document.getElementById('tradeModalEditBtn').textContent = 'Edit';
+  renderTradeView(updated);
+  document.getElementById('tradeModalTitle').textContent = fmtDate(updated.date) + ' · ' + updated.setup;
+  // refresh whichever view is currently visible
+  if(document.getElementById('view-log').classList.contains('active')) applyLogFilters();
+  if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+}
+document.getElementById('tradeModalClose').addEventListener('click', ()=>{
+  tradeModalBg.classList.remove('open');
+});
+tradeModalBg.addEventListener('click', e=>{ if(e.target.id==='tradeModalBg') tradeModalBg.classList.remove('open'); });
 ['filterSetup','filterResult'].forEach(id=>document.getElementById(id).addEventListener('change', applyLogFilters));
 document.getElementById('filterSearch').addEventListener('input', applyLogFilters);
 document.getElementById('clearFilters').addEventListener('click', ()=>{
@@ -1755,8 +1596,14 @@ document.getElementById('clearFilters').addEventListener('click', ()=>{
 ============================================================ */
 let chartInsts = {};
 function destroyChart(key){ if(chartInsts[key]){ chartInsts[key].destroy(); delete chartInsts[key]; } }
-function renderReports(){ renderSetupChart(); renderDowChart(); renderRDistChart(); renderAdherenceChart(); }
-function themeColor(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function renderReports(){
+  renderSetupChart();
+  renderDowChart();
+  renderRDistChart();
+  renderAdherenceChart();
+}
+
 function renderSetupChart(){
   destroyChart('setup');
   const groups = {};
@@ -1765,10 +1612,10 @@ function renderSetupChart(){
   const data = labels.map(l=>computeMetrics(groups[l]).winRate);
   chartInsts.setup = new Chart(document.getElementById('setupChart'), {
     type:'bar',
-    data:{labels, datasets:[{data, backgroundColor:themeColor('--accent')||'#D4AF6A', borderRadius:5}]},
+    data:{labels, datasets:[{data, backgroundColor:'#D4AF6A', borderRadius:5}]},
     options:{plugins:{legend:{display:false}}, scales:{
-      x:{ticks:{color:themeColor('--text-mute'), font:{size:10}}, grid:{display:false}},
-      y:{max:100, ticks:{color:themeColor('--text-mute'), font:{size:10}}, grid:{color:themeColor('--border')}}
+      x:{ticks:{color:'#8B8F98', font:{size:10}}, grid:{display:false}},
+      y:{max:100, ticks:{color:'#8B8F98', font:{size:10}}, grid:{color:'#242931'}}
     }}
   });
 }
@@ -1779,10 +1626,10 @@ function renderDowChart(){
   trades.forEach(t=>{ counts[new Date(t.date).getDay()]++; });
   chartInsts.dow = new Chart(document.getElementById('dowChart'), {
     type:'bar',
-    data:{labels:days, datasets:[{data:counts, backgroundColor:themeColor('--green')||'#5FBF7A', borderRadius:5}]},
+    data:{labels:days, datasets:[{data:counts, backgroundColor:'#5FBF7A', borderRadius:5}]},
     options:{plugins:{legend:{display:false}}, scales:{
-      x:{ticks:{color:themeColor('--text-mute'), font:{size:10}}, grid:{display:false}},
-      y:{ticks:{color:themeColor('--text-mute'), font:{size:10}}, grid:{color:themeColor('--border')}}
+      x:{ticks:{color:'#8B8F98', font:{size:10}}, grid:{display:false}},
+      y:{ticks:{color:'#8B8F98', font:{size:10}}, grid:{color:'#242931'}}
     }}
   });
 }
@@ -1799,10 +1646,10 @@ function renderRDistChart(){
   });
   chartInsts.rdist = new Chart(document.getElementById('rDistChart'), {
     type:'bar',
-    data:{labels:Object.keys(buckets), datasets:[{data:Object.values(buckets), backgroundColor:themeColor('--red')||'#E5654A', borderRadius:5}]},
+    data:{labels:Object.keys(buckets), datasets:[{data:Object.values(buckets), backgroundColor:'#E5654A', borderRadius:5}]},
     options:{plugins:{legend:{display:false}}, scales:{
-      x:{ticks:{color:themeColor('--text-mute'), font:{size:10}}, grid:{display:false}},
-      y:{ticks:{color:themeColor('--text-mute'), font:{size:10}}, grid:{color:themeColor('--border')}}
+      x:{ticks:{color:'#8B8F98', font:{size:10}}, grid:{display:false}},
+      y:{ticks:{color:'#8B8F98', font:{size:10}}, grid:{color:'#242931'}}
     }}
   });
 }
@@ -1812,8 +1659,8 @@ function renderAdherenceChart(){
   trades.forEach(t=>{ if(groups[t.followed]!==undefined) groups[t.followed]++; });
   chartInsts.adh = new Chart(document.getElementById('adherenceChart'), {
     type:'doughnut',
-    data:{labels:Object.keys(groups), datasets:[{data:Object.values(groups), backgroundColor:[themeColor('--green'),themeColor('--red'),themeColor('--accent')], borderWidth:0}]},
-    options:{plugins:{legend:{position:'bottom', labels:{color:themeColor('--text-mute'), font:{size:11}}}}}
+    data:{labels:Object.keys(groups), datasets:[{data:Object.values(groups), backgroundColor:['#5FBF7A','#E5654A','#D4AF6A'], borderWidth:0}]},
+    options:{plugins:{legend:{position:'bottom', labels:{color:'#8B8F98', font:{size:11}}}}}
   });
 }
 
@@ -1829,10 +1676,9 @@ function renderChecklist(){
   document.getElementById('checklistWrap').innerHTML = checklist.map(c=>`
     <div class="checklist-item ${c.done?'done':''}" data-id="${c.id}">
       <input type="checkbox" ${c.done?'checked':''}>
-      <span style="flex:1;">${escapeHtml(c.text)}</span>
-      <span class="row-del" data-delchk="${c.id}">✕</span>
-    </div>`).join('') || `<div class="small-mute">No checklist items yet — add one below.</div>`;
-  document.querySelectorAll('.checklist-item input[type=checkbox]').forEach(inp=>{
+      ${c.text}
+    </div>`).join('');
+  document.querySelectorAll('.checklist-item input').forEach(inp=>{
     inp.addEventListener('change', async e=>{
       const id = e.target.closest('.checklist-item').dataset.id;
       const item = checklist.find(c=>String(c.id)===String(id));
@@ -1841,26 +1687,7 @@ function renderChecklist(){
       await sb.from('goldbook_checklist').update({done:item.done}).eq('id', id);
     });
   });
-  document.querySelectorAll('[data-delchk]').forEach(el=>{
-    el.addEventListener('click', async ()=>{
-      const id = el.dataset.delchk;
-      await sb.from('goldbook_checklist').delete().eq('id', id);
-      checklist = checklist.filter(c=>String(c.id)!==String(id));
-      renderChecklist();
-    });
-  });
 }
-document.getElementById('addChecklistBtn').addEventListener('click', async ()=>{
-  const inp = document.getElementById('newChecklistItem');
-  const text = inp.value.trim();
-  if(!text) return;
-  const { data, error } = await sb.from('goldbook_checklist')
-    .insert({user_id:currentUser.id, account_id:currentAccount.id, item_text:text, done:false, sort_order:checklist.length}).select().single();
-  if(error){ alert('Could not add item: ' + error.message); return; }
-  checklist.push({id:data.id, text:data.item_text, done:data.done, sort_order:data.sort_order});
-  inp.value = '';
-  renderChecklist();
-});
 document.getElementById('saveNoteBtn').addEventListener('click', async ()=>{
   const date = document.getElementById('note_date').value;
   const text = document.getElementById('note_text').value.trim();
@@ -1868,7 +1695,7 @@ document.getElementById('saveNoteBtn').addEventListener('click', async ()=>{
   const btn = document.getElementById('saveNoteBtn');
   btn.disabled = true; btn.textContent = 'Saving…';
   const { data, error } = await sb.from('goldbook_notes')
-    .insert({user_id:currentUser.id, account_id:currentAccount.id, note_date:date, note_text:text}).select().single();
+    .insert({user_id:currentUser.id, note_date:date, note_text:text}).select().single();
   btn.disabled = false; btn.textContent = 'Save Entry';
   if(error){ alert('Could not save entry: ' + error.message); return; }
   notes.unshift(dbToNote(data));
@@ -1884,73 +1711,41 @@ function renderNotesList(){
       <div class="note-text">${escapeHtml(n.text)}</div>
     </div>`).join('');
 }
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 /* ============================================================
    Settings
 ============================================================ */
 function renderSettings(){
-  document.getElementById('displayNameInput').value = prefs.display_name || '';
-  renderThemeRow();
-  renderAccountsList();
-  renderSetupsList();
-  renderWidgetManager();
-}
-document.getElementById('saveProfileBtn').addEventListener('click', async ()=>{
-  prefs.display_name = document.getElementById('displayNameInput').value.trim();
-  await savePreferences();
-  alert('Saved.');
-});
-function renderThemeRow(){
-  document.getElementById('themeRow').innerHTML = THEMES.map(t=>`
-    <div class="theme-swatch ${prefs.theme===t.key?'active':''}" data-theme-pick="${t.key}">
-      <div class="sw-preview" style="background:${t.bg}; box-shadow:inset 0 0 0 10px ${t.accent}22;"></div>
-      <span>${t.label}</span>
-    </div>`).join('');
-  document.querySelectorAll('[data-theme-pick]').forEach(el=>{
-    el.addEventListener('click', async ()=>{
-      applyTheme(el.dataset.themePick);
-      await savePreferences();
-      renderThemeRow();
-      // repaint chart-dependent views if visible
-      if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
-      if(document.getElementById('view-reports').classList.contains('active')) renderReports();
-    });
-  });
-}
-function renderAccountsList(){
-  document.getElementById('accountsList').innerHTML = accounts.map(a=>`
-    <div class="account-row">
-      <div>
-        <div class="a-name">${escapeHtml(a.account_name)} ${currentAccount && a.id===currentAccount.id ? '<span class="tag setup" style="margin-left:6px;">Active</span>' : ''}</div>
-        <div class="a-meta">#${escapeHtml(a.account_number)} ${a.journal_tag ? '· '+escapeHtml(a.journal_tag) : ''}</div>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-ghost btn-icon" data-editacc="${a.id}">Edit</button>
-        <button class="btn btn-danger btn-icon" data-delacc="${a.id}">Delete</button>
-      </div>
-    </div>`).join('');
-  document.querySelectorAll('[data-editacc]').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      const acc = accounts.find(a=>a.id===el.dataset.editacc);
-      openAccountModal('edit', acc);
-    });
-  });
-  document.querySelectorAll('[data-delacc]').forEach(el=>{
-    el.addEventListener('click', ()=>deleteAccount(el.dataset.delacc));
-  });
-}
-function renderSetupsList(){
+  document.getElementById('settings_balance').value = account.starting_balance;
+  document.getElementById('settings_risk').value = account.risk_percent;
+  document.getElementById('settingsCurrentBalance').textContent = '$'+currentBalance().toFixed(2);
+
   document.getElementById('customSetupsList').innerHTML = customSetups.length ? customSetups.map(s=>`
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px;">
-      <span>${escapeHtml(s.name)}</span><span class="row-del" data-rmsetup="${s.id}">✕</span>
-    </div>`).join('') : `<div class="small-mute">No setups yet — add your first one above.</div>`;
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px;">
+      <span>${s.name}</span><span class="row-del" data-rmsetup="${s.id}">✕</span>
+    </div>`).join('') : `<div class="small-mute">No custom setups yet.</div>`;
   document.querySelectorAll('[data-rmsetup]').forEach(el=>{
     el.addEventListener('click', async ()=>{
       const id = el.dataset.rmsetup;
       const { error } = await sb.from('goldbook_setups').delete().eq('id', id);
       if(error){ alert('Could not remove: ' + error.message); return; }
       customSetups = customSetups.filter(s=>String(s.id)!==String(id));
-      renderSetupsList();
+      renderSettings();
+    });
+  });
+
+  document.getElementById('customRRList').innerHTML = customRR.length ? customRR.map(s=>`
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px;">
+      <span>${s.name}</span><span class="row-del" data-rmrr="${s.id}">✕</span>
+    </div>`).join('') : `<div class="small-mute">No custom risk/reward tags yet.</div>`;
+  document.querySelectorAll('[data-rmrr]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const id = el.dataset.rmrr;
+      const { error } = await sb.from('goldbook_rrtags').delete().eq('id', id);
+      if(error){ alert('Could not remove: ' + error.message); return; }
+      customRR = customRR.filter(s=>String(s.id)!==String(id));
+      renderSettings();
     });
   });
 }
@@ -1959,80 +1754,42 @@ document.getElementById('addSetupBtn').addEventListener('click', async ()=>{
   const val = inp.value.trim();
   if(!val) return;
   const { data, error } = await sb.from('goldbook_setups')
-    .insert({user_id:currentUser.id, account_id:currentAccount.id, name:val}).select().single();
+    .insert({user_id:currentUser.id, name:val}).select().single();
   if(error){ alert('Could not add setup: ' + error.message); return; }
   customSetups.push(data);
   inp.value='';
-  renderSetupsList();
+  renderSettings();
+});
+document.getElementById('addRRBtn').addEventListener('click', async ()=>{
+  const inp = document.getElementById('newRRName');
+  const val = inp.value.trim();
+  if(!val) return;
+  const { data, error } = await sb.from('goldbook_rrtags')
+    .insert({user_id:currentUser.id, name:val}).select().single();
+  if(error){ alert('Could not add tag: ' + error.message); return; }
+  customRR.push(data);
+  inp.value='';
+  renderSettings();
+});
+document.getElementById('saveAccountBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('saveAccountBtn');
+  const starting_balance = parseFloat(document.getElementById('settings_balance').value) || 0;
+  const risk_percent = parseFloat(document.getElementById('settings_risk').value) || 0;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const { error } = await sb.from('goldbook_account')
+    .update({starting_balance, risk_percent}).eq('user_id', currentUser.id);
+  btn.disabled = false; btn.textContent = 'Save Balance Settings';
+  if(error){ alert('Could not save balance settings: ' + error.message); return; }
+  account = {starting_balance, risk_percent};
+  renderSettings();
 });
 
-function renderWidgetManager(){
-  const cfg = (currentAccount.widgets_config && currentAccount.widgets_config.length) ? currentAccount.widgets_config : DEFAULT_WIDGETS.slice();
-  document.getElementById('widgetManageList').innerHTML = cfg.map((w,i)=>`
-    <div class="widget-manage-row">
-      <div class="wm-left">
-        <input type="checkbox" class="wm-toggle" data-wtoggle="${w.key}" ${w.visible?'checked':''}>
-        <span>${WIDGET_LABELS[w.key]||w.key}</span>
-      </div>
-      <div class="wm-arrows">
-        <button data-wup="${i}" ${i===0?'disabled':''}>↑</button>
-        <button data-wdown="${i}" ${i===cfg.length-1?'disabled':''}>↓</button>
-      </div>
-    </div>`).join('');
-  document.querySelectorAll('[data-wtoggle]').forEach(el=>{
-    el.addEventListener('change', async ()=>{
-      const w = currentAccount.widgets_config.find(x=>x.key===el.dataset.wtoggle);
-      if(w) w.visible = el.checked;
-      await saveWidgetsConfig();
-    });
-  });
-  document.querySelectorAll('[data-wup]').forEach(el=>{
-    el.addEventListener('click', async ()=>{
-      const i = parseInt(el.dataset.wup);
-      const arr = currentAccount.widgets_config;
-      [arr[i-1], arr[i]] = [arr[i], arr[i-1]];
-      await saveWidgetsConfig();
-      renderWidgetManager();
-    });
-  });
-  document.querySelectorAll('[data-wdown]').forEach(el=>{
-    el.addEventListener('click', async ()=>{
-      const i = parseInt(el.dataset.wdown);
-      const arr = currentAccount.widgets_config;
-      [arr[i+1], arr[i]] = [arr[i], arr[i+1]];
-      await saveWidgetsConfig();
-      renderWidgetManager();
-    });
-  });
-}
-
-/* ============================================================
-   Export / Import (JSON + CSV)
-============================================================ */
-function tradesToCSV(list){
-  const headers = ['Date','Time','Setup','Symbol','Direction','Entry','SL','TP','EntryNotes','Result','PnL_R','Emotion','FollowedPlan','Notes'];
-  const escCsv = v => {
-    if(v===null||v===undefined) return '';
-    const s = String(v);
-    return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
-  };
-  const rows = list.map(t=>[t.date,t.time||'',t.setup||'',t.symbol||'',t.direction||'',t.entry??'',t.sl??'',t.tp??'',t.entrynotes||'',t.result||'',t.pnlr??'',t.emotion||'',t.followed||'',t.notes||''].map(escCsv).join(','));
-  return headers.join(',') + '\n' + rows.join('\n');
-}
-function downloadBlob(content, filename, type){
-  const blob = new Blob([content], {type});
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify({trades, notes, customSetups, customRR, checklist, account}, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-}
-document.getElementById('exportJsonBtn').addEventListener('click', ()=>{
-  downloadBlob(JSON.stringify({account:currentAccount.account_name, trades, notes, customSetups, checklist}, null, 2),
-    `goldbook-${currentAccount.account_number}-${new Date().toISOString().slice(0,10)}.json`, 'application/json');
-});
-document.getElementById('exportCsvBtn').addEventListener('click', ()=>{
-  downloadBlob(tradesToCSV([...trades].sort((a,b)=>new Date(a.date)-new Date(b.date))),
-    `goldbook-${currentAccount.account_number}-trades-${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
+  a.href = url; a.download = `goldbook-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
 });
 document.getElementById('importFile').addEventListener('change', async e=>{
   const file = e.target.files[0]; if(!file) return;
@@ -2042,39 +1799,47 @@ document.getElementById('importFile').addEventListener('change', async e=>{
       const data = JSON.parse(ev.target.result);
       if(data.trades && data.trades.length){
         const rows = data.trades.map(t=>({
-          user_id:currentUser.id, account_id:currentAccount.id, trade_date:t.date, trade_time:t.time||null, setup:t.setup,
-          direction:t.direction, symbol:t.symbol||null, entry:t.entry||null, sl:t.sl||null,
-          tp:t.tp||null, entry_notes:t.entrynotes||null, result:t.result, pnlr:t.pnlr||null, emotion:t.emotion, followed:t.followed, notes:t.notes,
+          user_id:currentUser.id, trade_date:t.date, open_time:t.open_time||t.time||null, close_time:t.close_time||null,
+          setup:t.setup, direction:t.direction, fib:t.fib, symbol:t.symbol, entry:t.entry||null, sl:t.sl||null,
+          tp:t.tp||null, result:t.result, pnlr:t.pnlr||null, rr_tag:t.rr_tag||null, emotion:t.emotion, followed:t.followed, notes:t.notes,
         }));
         await sb.from('goldbook_trades').insert(rows);
       }
       if(data.notes && data.notes.length){
         await sb.from('goldbook_notes').insert(data.notes.map(n=>({
-          user_id:currentUser.id, account_id:currentAccount.id, note_date:n.date, note_text:n.text,
+          user_id:currentUser.id, note_date:n.date, note_text:n.text,
         })));
       }
       if(data.customSetups && data.customSetups.length){
         const names = data.customSetups.map(s=> typeof s==='string' ? s : s.name);
-        await sb.from('goldbook_setups').insert(names.map(name=>({user_id:currentUser.id, account_id:currentAccount.id, name})));
+        await sb.from('goldbook_setups').insert(names.map(name=>({user_id:currentUser.id, name})));
       }
-      await loadAccountData();
+      if(data.customRR && data.customRR.length){
+        const names = data.customRR.map(s=> typeof s==='string' ? s : s.name);
+        await sb.from('goldbook_rrtags').insert(names.map(name=>({user_id:currentUser.id, name})));
+      }
+      if(data.account){
+        await sb.from('goldbook_account').update({
+          starting_balance: parseFloat(data.account.starting_balance)||0,
+          risk_percent: parseFloat(data.account.risk_percent)||1,
+        }).eq('user_id', currentUser.id);
+      }
+      await loadAllData();
       renderSettings();
       alert('Import complete.');
     }catch(err){ alert('Invalid file or import error: ' + err.message); }
   };
   reader.readAsText(file);
-  e.target.value = '';
 });
 document.getElementById('wipeBtn').addEventListener('click', async ()=>{
-  if(!confirm('This will permanently delete all trades, notes, and setups for this account. Continue?')) return;
-  const accId = currentAccount.id;
+  if(!confirm('This will permanently delete all your trades, notes, and custom setups. Continue?')) return;
   await Promise.all([
-    sb.from('goldbook_trades').delete().eq('account_id', accId),
-    sb.from('goldbook_notes').delete().eq('account_id', accId),
-    sb.from('goldbook_setups').delete().eq('account_id', accId),
-    sb.from('goldbook_checklist').delete().eq('account_id', accId),
+    sb.from('goldbook_trades').delete().eq('user_id', currentUser.id),
+    sb.from('goldbook_notes').delete().eq('user_id', currentUser.id),
+    sb.from('goldbook_setups').delete().eq('user_id', currentUser.id),
+    sb.from('goldbook_rrtags').delete().eq('user_id', currentUser.id),
   ]);
-  trades=[]; notes=[]; customSetups=[]; checklist=[];
+  trades=[]; notes=[]; customSetups=[]; customRR=[];
   renderSettings();
 });
 
@@ -2085,3 +1850,5 @@ initAuth();
 </script>
 </body>
 </html>
+GoldBook_Journal.html
+Displaying GoldBook_Journal.html.
