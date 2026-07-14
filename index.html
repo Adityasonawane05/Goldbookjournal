@@ -495,7 +495,7 @@ tbody tr:hover{background:var(--surface-2);}
 <!-- ============ AUTH SCREEN ============ -->
 <div id="authScreen">
   <div>
-    <div class="auth-card">
+    <div class="auth-card" id="authCard">
       <div class="auth-brand">
         <div class="brand-mark">GB</div>
         <div>
@@ -508,29 +508,42 @@ tbody tr:hover{background:var(--surface-2);}
         <div class="auth-tab" data-mode="signup">Sign Up</div>
       </div>
       <div class="auth-title" id="authTitle">Welcome back</div>
-      <div class="auth-sub" id="authSub">Log in to access your trading journal.</div>
+      <div class="auth-sub" id="authSub">Log in with your username and seed phrase.</div>
       <div class="auth-error" id="authError"></div>
       <div class="auth-info" id="authInfo"></div>
-      <form id="authForm">
+
+      <form id="loginForm">
         <div class="field">
-          <label>Email</label>
-          <input type="text" id="auth_email" autocomplete="email" required>
+          <label>Username</label>
+          <input type="text" id="login_username" autocomplete="username" required>
         </div>
         <div class="field">
-          <label>Password</label>
-          <input type="password" id="auth_password" autocomplete="current-password" required minlength="6">
+          <label>Seed Phrase</label>
+          <textarea id="login_phrase" rows="2" placeholder="the 8 words you saved, separated by spaces" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="authSubmitBtn">Log In</button>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="loginSubmitBtn">Log In</button>
       </form>
-      <form id="otpForm" style="display:none;">
+
+      <form id="signupForm" style="display:none;">
         <div class="field">
-          <label>6-digit code sent to your email</label>
-          <input type="text" id="otp_code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required>
+          <label>Choose a username</label>
+          <input type="text" id="signup_username" autocomplete="username" required placeholder="letters, numbers, _ or -">
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="otpSubmitBtn">Verify Email</button>
-        <button type="button" class="btn btn-ghost" style="width:100%; justify-content:center; margin-top:8px;" id="otpResendBtn">Resend code</button>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="signupSubmitBtn">Create Account</button>
       </form>
-      <div class="auth-foot">Your trades are private — only you can see them.</div>
+
+      <div id="seedRevealWrap" style="display:none;">
+        <div class="auth-title" style="font-size:15px;">Save your seed phrase</div>
+        <div class="auth-sub">These words are the <b>only</b> way to access your account. GoldBook has no email — if you lose them, your account can't be recovered.</div>
+        <div id="seedPhraseBox" style="background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:14px; font-family:var(--mono); font-size:14px; line-height:1.8; letter-spacing:.5px; color:var(--gold); margin-bottom:14px; word-spacing:8px;"></div>
+        <label style="display:flex; gap:8px; align-items:flex-start; font-size:12px; color:var(--text-mute); margin-bottom:14px; cursor:pointer;">
+          <input type="checkbox" id="seedConfirmCheck" style="width:auto; min-height:unset; margin-top:2px;">
+          <span>I've saved these words somewhere safe. I understand GoldBook cannot recover my account without them.</span>
+        </label>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" id="seedContinueBtn" disabled>Continue to GoldBook</button>
+      </div>
+
+      <div class="auth-foot" id="authFoot">Your trades are private — only you can see them.</div>
     </div>
     <div class="config-banner" id="configBanner" style="display:none;">
       ⚠ Supabase isn't connected yet. Open this file and set <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; tag, and run <code>schema.sql</code> in your Supabase project's SQL editor first.
@@ -962,12 +975,11 @@ tbody tr:hover{background:var(--surface-2);}
       alter table goldbook_accounts add column if not exists show_rr_tag boolean default true;
 
       (trade_time is reused as the opening time — no rename needed.)
-   4. EMAIL OTP — to have Supabase email an actual 6-digit code
-      (instead of only a confirmation link) go to Authentication ->
-      Email Templates -> "Confirm signup" in your Supabase dashboard
-      and make sure the template includes {{ .Token }} (Supabase's
-      default template already supports this). No code changes are
-      needed beyond what's already wired up below.
+   4. AUTH — GoldBook uses username + seed phrase instead of email.
+      Under Authentication -> Providers -> Email in your Supabase
+      dashboard, make sure "Confirm email" is turned OFF (accounts
+      use a synthetic @goldbook.internal address, so there's no
+      real inbox to confirm). No SMTP setup needed at all.
 ============================================================ */
 const SUPABASE_URL = 'https://silqfmzkwzuoitzpssvo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_avARIs_XvY8heQzq2Y-D4Q_mgweZawA';
@@ -1012,41 +1024,59 @@ function allSetups(){ return customSetups.map(s=>s.name); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 /* ============================================================
-   Auth screen wiring
+   Wallet-style auth: username + seed phrase (no email/OTP)
 ============================================================ */
 const authScreen = document.getElementById('authScreen');
 const appRoot = document.getElementById('appRoot');
-const authForm = document.getElementById('authForm');
 const authError = document.getElementById('authError');
 const authInfo = document.getElementById('authInfo');
-const authSubmitBtn = document.getElementById('authSubmitBtn');
-const otpForm = document.getElementById('otpForm');
-const otpSubmitBtn = document.getElementById('otpSubmitBtn');
-let authMode = 'login';
-let pendingOtpEmail = null;
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const seedRevealWrap = document.getElementById('seedRevealWrap');
 
-document.querySelectorAll('.auth-tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    authMode = tab.dataset.mode;
-    document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    hideAuthMsgs();
-    otpForm.style.display = 'none';
-    authForm.style.display = 'block';
-    pendingOtpEmail = null;
-    if(authMode==='login'){
-      document.getElementById('authTitle').textContent = 'Welcome back';
-      document.getElementById('authSub').textContent = 'Log in to access your trading journal.';
-      authSubmitBtn.textContent = 'Log In';
-      document.getElementById('auth_password').autocomplete = 'current-password';
-    } else {
-      document.getElementById('authTitle').textContent = 'Create your account';
-      document.getElementById('authSub').textContent = 'Free to join. Your data stays private to you.';
-      authSubmitBtn.textContent = 'Sign Up';
-      document.getElementById('auth_password').autocomplete = 'new-password';
-    }
-  });
-});
+const WORDLIST = [
+  'anchor','apple','arrow','ash','aspen','autumn','badge','banner','basil','bay',
+  'beacon','bear','birch','blossom','bloom','blue','bolt','bramble','breeze','bridge',
+  'brook','cabin','cactus','canyon','cedar','chalk','charm','cherry','chess','cliff',
+  'cloud','clover','coast','comet','copper','coral','cove','crane','crater','creek',
+  'crest','crown','crystal','current','dawn','delta','desert','dew','dune','dusk',
+  'eagle','ember','falcon','feather','fern','fig','fjord','flame','flare','flint',
+  'forest','fox','frost','garden','glacier','glade','glow','gold','grain','granite',
+  'grove','gull','harbor','hawk','hazel','heron','hill','honey','hornet','ice',
+  'indigo','iris','island','ivy','jade','juniper','kestrel','lagoon','lake','lantern',
+  'laurel','leaf','ledge','lily','linen','lotus','lynx','maple','marsh','meadow',
+  'mesa','meteor','mint','mist','moon','moss','mountain','myrtle','nectar','nest',
+  'nova','oak','oasis','ocean','olive','onyx','opal','orchid','osprey','otter',
+  'owl','palm','pearl','pebble','peak','petal','pine','plain','plateau','plum',
+  'pond','poppy','prairie','quartz','quill','rain','raven','reed','ridge','river',
+  'robin','rose','ruby','sage','sand','sapphire','shale','shell','shore','sierra',
+  'silver','slate','snow','spark','sparrow','spring','spruce','star','stone','storm',
+  'stream','sun','sunset','swan','sycamore','thistle','thorn','thunder','tide','timber',
+  'topaz','trail','tulip','tundra','valley','velvet','vine','violet','vista','walnut',
+  'wave','wheat','willow','wind','wing','winter','wisteria','wolf','wood','wren',
+];
+
+function secureRandomInt(max){
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0] % max;
+}
+function genSeedPhrase(n=8){
+  const words = [];
+  for(let i=0;i<n;i++) words.push(WORDLIST[secureRandomInt(WORDLIST.length)]);
+  return words;
+}
+function normalizeUsername(u){ return u.trim().toLowerCase().replace(/[^a-z0-9_-]/g,''); }
+function normalizePhrase(p){ return p.trim().toLowerCase().split(/\s+/).filter(Boolean).join(' '); }
+function syntheticEmail(username){ return `${username}@goldbook.internal`; }
+
+async function derivePassword(username, phrase){
+  const raw = normalizePhrase(phrase) + '::' + normalizeUsername(username);
+  const enc = new TextEncoder().encode(raw);
+  const hashBuf = await crypto.subtle.digest('SHA-256', enc);
+  const hex = Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  return hex + 'Aa1!'; // ensures password complexity rules (upper/number/symbol) are satisfied
+}
 
 function hideAuthMsgs(){ authError.style.display='none'; authInfo.style.display='none'; }
 function showAuthError(msg){ authError.textContent=msg; authError.style.display='block'; authInfo.style.display='none'; }
@@ -1054,73 +1084,110 @@ function showAuthInfo(msg){ authInfo.textContent=msg; authInfo.style.display='bl
 
 if(!CONFIGURED){
   document.getElementById('configBanner').style.display = 'block';
-  authSubmitBtn.disabled = true;
-  authSubmitBtn.style.opacity = 0.5;
 }
 
-authForm.addEventListener('submit', async e=>{
+document.querySelectorAll('.auth-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    hideAuthMsgs();
+    seedRevealWrap.style.display = 'none';
+    if(tab.dataset.mode==='login'){
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+      document.getElementById('authTitle').textContent = 'Welcome back';
+      document.getElementById('authSub').textContent = 'Log in with your username and seed phrase.';
+    } else {
+      loginForm.style.display = 'none';
+      signupForm.style.display = 'block';
+      document.getElementById('authTitle').textContent = 'Create your account';
+      document.getElementById('authSub').textContent = 'Pick a username — we\'ll generate your seed phrase.';
+    }
+  });
+});
+
+let pendingSignup = null; // {username, phrase}
+
+signupForm.addEventListener('submit', async e=>{
   e.preventDefault();
   hideAuthMsgs();
   if(!CONFIGURED) return;
-  const email = document.getElementById('auth_email').value.trim();
-  const password = document.getElementById('auth_password').value;
-  authSubmitBtn.disabled = true;
-  authSubmitBtn.textContent = authMode==='login' ? 'Logging in…' : 'Signing up…';
+  const username = normalizeUsername(document.getElementById('signup_username').value);
+  if(username.length < 3){ showAuthError('Username must be at least 3 characters (letters, numbers, _ or -).'); return; }
+
+  const btn = document.getElementById('signupSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Creating…';
   try{
-    if(authMode==='login'){
-      const {data, error} = await sb.auth.signInWithPassword({email, password});
-      if(error) throw error;
-      await onLoggedIn(data.user);
-    } else {
-      const {data, error} = await sb.auth.signUp({email, password});
-      if(error) throw error;
-      if(data.user && !data.session){
-        pendingOtpEmail = email;
-        showAuthInfo('Account created. Enter the 6-digit code we emailed you to verify your address.');
-        authForm.style.display = 'none';
-        otpForm.style.display = 'block';
-        authSubmitBtn.disabled = false;
-        authSubmitBtn.textContent = 'Sign Up';
-        return;
-      }
-      await onLoggedIn(data.user);
-    }
-  } catch(err){
-    showAuthError(err.message || 'Something went wrong.');
-    authSubmitBtn.disabled = false;
-    authSubmitBtn.textContent = authMode==='login' ? 'Log In' : 'Sign Up';
+    const phraseWords = genSeedPhrase(8);
+    const phrase = phraseWords.join(' ');
+    pendingSignup = {username, phrase};
+
+    document.getElementById('seedPhraseBox').textContent = phrase;
+    signupForm.style.display = 'none';
+    seedRevealWrap.style.display = 'block';
+    document.getElementById('seedConfirmCheck').checked = false;
+    document.getElementById('seedContinueBtn').disabled = true;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account';
   }
 });
 
-otpForm.addEventListener('submit', async e=>{
-  e.preventDefault();
+document.getElementById('seedConfirmCheck').addEventListener('change', e=>{
+  document.getElementById('seedContinueBtn').disabled = !e.target.checked;
+});
+
+document.getElementById('seedContinueBtn').addEventListener('click', async ()=>{
+  if(!pendingSignup) return;
   hideAuthMsgs();
-  if(!CONFIGURED || !pendingOtpEmail) return;
-  const token = document.getElementById('otp_code').value.trim();
-  otpSubmitBtn.disabled = true; otpSubmitBtn.textContent = 'Verifying…';
+  const btn = document.getElementById('seedContinueBtn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
   try{
-    const {data, error} = await sb.auth.verifyOtp({email: pendingOtpEmail, token, type:'signup'});
-    if(error) throw error;
-    otpForm.style.display = 'none';
-    authForm.style.display = 'block';
-    otpForm.reset();
-    pendingOtpEmail = null;
-    if(data.user) await onLoggedIn(data.user);
+    const {username, phrase} = pendingSignup;
+    const password = await derivePassword(username, phrase);
+    const email = syntheticEmail(username);
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error){
+      if(/already registered|already exists/i.test(error.message)){
+        throw new Error('That username is already taken.');
+      }
+      throw error;
+    }
+    pendingSignup = null;
+    if(data.session){
+      await onLoggedIn(data.user);
+    } else {
+      // email confirmation still on in Supabase settings — guide the user
+      showAuthInfo('Account created — but email confirmation is still ON in your Supabase settings. Turn it off under Authentication → Providers → Email, then log in below.');
+      seedRevealWrap.style.display = 'none';
+      document.querySelector('.auth-tab[data-mode="login"]').click();
+    }
   } catch(err){
-    showAuthError(err.message || 'Invalid or expired code.');
+    seedRevealWrap.style.display = 'none';
+    signupForm.style.display = 'block';
+    showAuthError(err.message || 'Could not create account.');
   } finally {
-    otpSubmitBtn.disabled = false; otpSubmitBtn.textContent = 'Verify Email';
+    btn.disabled = false; btn.textContent = 'Continue to GoldBook';
   }
 });
-document.getElementById('otpResendBtn').addEventListener('click', async ()=>{
-  if(!CONFIGURED || !pendingOtpEmail) return;
+
+loginForm.addEventListener('submit', async e=>{
+  e.preventDefault();
   hideAuthMsgs();
+  if(!CONFIGURED) return;
+  const username = normalizeUsername(document.getElementById('login_username').value);
+  const phrase = document.getElementById('login_phrase').value;
+  const btn = document.getElementById('loginSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Logging in…';
   try{
-    const {error} = await sb.auth.resend({type:'signup', email: pendingOtpEmail});
-    if(error) throw error;
-    showAuthInfo('A new code has been sent to your email.');
+    const password = await derivePassword(username, phrase);
+    const email = syntheticEmail(username);
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) throw new Error('Incorrect username or seed phrase.');
+    await onLoggedIn(data.user);
   } catch(err){
-    showAuthError(err.message || 'Could not resend code.');
+    showAuthError(err.message || 'Could not log in.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log In';
   }
 });
 
@@ -1131,11 +1198,11 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   trades=[]; notes=[]; customSetups=[]; checklist=[]; accounts=[];
   appRoot.classList.remove('show');
   authScreen.style.display = 'flex';
-  authForm.reset();
-  otpForm.reset();
-  otpForm.style.display = 'none';
-  authForm.style.display = 'block';
-  pendingOtpEmail = null;
+  loginForm.reset();
+  signupForm.reset();
+  seedRevealWrap.style.display = 'none';
+  loginForm.style.display = 'block';
+  signupForm.style.display = 'none';
   hideAuthMsgs();
 });
 
