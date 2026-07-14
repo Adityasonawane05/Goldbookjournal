@@ -427,6 +427,20 @@ tbody tr:hover{background:var(--surface-2);}
 .logout-btn{background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:11px; text-decoration:underline; min-height:unset;}
 .logout-btn:hover{color:var(--red);}
 
+/* username availability */
+.username-status{font-size:11.5px; margin-top:6px; min-height:16px; display:flex; align-items:center; gap:6px;}
+.username-status.ok{color:var(--green);}
+.username-status.taken{color:var(--red);}
+.username-status.checking{color:var(--text-faint);}
+.username-suggestions{display:none; flex-wrap:wrap; gap:7px; margin-top:8px;}
+.username-suggestions.show{display:flex;}
+.username-suggestions .usg-label{width:100%; font-size:11px; color:var(--text-mute); margin-bottom:2px;}
+.usg-chip{
+  padding:7px 12px; border-radius:99px; border:1px solid var(--gold-dim); background:color-mix(in srgb, var(--gold) 8%, transparent);
+  font-size:12px; cursor:pointer; color:var(--gold); font-family:var(--mono);
+}
+.usg-chip:hover{background:color-mix(in srgb, var(--gold) 16%, transparent);}
+
 /* ===================== Forex Sessions Clock widget (namespaced) ===================== */
 .fxclock{
   --fx-bg:var(--surface-2);
@@ -528,6 +542,10 @@ tbody tr:hover{background:var(--surface-2);}
         <div class="field">
           <label>Choose a username</label>
           <input type="text" id="signup_username" autocomplete="username" required placeholder="letters, numbers, _ or -">
+          <div class="username-status" id="usernameStatus"></div>
+          <div class="username-suggestions" id="usernameSuggestions">
+            <span class="usg-label">That one's taken — try one of these:</span>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="signupSubmitBtn">Create Account</button>
       </form>
@@ -980,6 +998,15 @@ tbody tr:hover{background:var(--surface-2);}
       dashboard, make sure "Confirm email" is turned OFF (accounts
       use a synthetic @goldbook.internal address, so there's no
       real inbox to confirm). No SMTP setup needed at all.
+   5. USERNAME UNIQUENESS — run username-uniqueness.sql once. It
+      creates a public.goldbook_usernames lookup table plus a
+      trigger on auth.users that populates it automatically, so the
+      client can check availability and offer suggestions without
+      ever touching auth.users directly. Supabase Auth already
+      enforces unique emails (and therefore unique usernames, since
+      the synthetic email is derived 1:1 from the username), so this
+      table is purely for fast availability checks + suggestions —
+      it doesn't change who's allowed to sign up as what.
 ============================================================ */
 const SUPABASE_URL = 'https://silqfmzkwzuoitzpssvo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_avARIs_XvY8heQzq2Y-D4Q_mgweZawA';
@@ -1033,6 +1060,9 @@ const authInfo = document.getElementById('authInfo');
 const loginForm = document.getElementById('loginForm');
 const signupForm = document.getElementById('signupForm');
 const seedRevealWrap = document.getElementById('seedRevealWrap');
+const usernameStatusEl = document.getElementById('usernameStatus');
+const usernameSuggestionsEl = document.getElementById('usernameSuggestions');
+const signupUsernameInput = document.getElementById('signup_username');
 
 const WORDLIST = [
   'anchor','apple','arrow','ash','aspen','autumn','badge','banner','basil','bay',
@@ -1086,6 +1116,87 @@ if(!CONFIGURED){
   document.getElementById('configBanner').style.display = 'block';
 }
 
+/* ------------------------------------------------------------
+   Username availability + suggestions
+   Backed by public.goldbook_usernames (see username-uniqueness.sql).
+   This table is auto-populated by a DB trigger on auth.users, so
+   it can never drift out of sync with what's actually registered —
+   Supabase Auth's own unique-email constraint remains the real
+   source of truth (synthetic email = username@goldbook.internal).
+------------------------------------------------------------- */
+async function isUsernameTaken(username){
+  if(!CONFIGURED || !username) return false;
+  const { data, error } = await sb.from('goldbook_usernames').select('username').eq('username', username).maybeSingle();
+  if(error){ return false; } // fail open — real check still happens at signUp time
+  return !!data;
+}
+async function filterAvailable(candidates){
+  if(!CONFIGURED || !candidates.length) return candidates;
+  const { data, error } = await sb.from('goldbook_usernames').select('username').in('username', candidates);
+  if(error) return candidates;
+  const taken = new Set((data||[]).map(r=>r.username));
+  return candidates.filter(c=>!taken.has(c));
+}
+function randomSuffix(){ return String(secureRandomInt(9000)+100); }
+async function generateUsernameSuggestions(base, count=4){
+  const clean = normalizeUsername(base) || 'trader';
+  const pool = new Set();
+  while(pool.size < 10){
+    const style = secureRandomInt(4);
+    let cand;
+    if(style===0) cand = clean + randomSuffix();
+    else if(style===1) cand = clean + '_' + WORDLIST[secureRandomInt(WORDLIST.length)];
+    else if(style===2) cand = WORDLIST[secureRandomInt(WORDLIST.length)] + '_' + clean;
+    else cand = clean + '_' + WORDLIST[secureRandomInt(WORDLIST.length)] + secureRandomInt(90);
+    pool.add(normalizeUsername(cand));
+  }
+  const candidates = Array.from(pool);
+  const available = await filterAvailable(candidates);
+  return available.slice(0, count);
+}
+async function showUsernameSuggestions(base){
+  const suggestions = await generateUsernameSuggestions(base);
+  usernameSuggestionsEl.innerHTML = `<span class="usg-label">That one's taken — try one of these:</span>` +
+    suggestions.map(s=>`<span class="usg-chip" data-usg="${s}">${s}</span>`).join('');
+  usernameSuggestionsEl.classList.add('show');
+  usernameSuggestionsEl.querySelectorAll('.usg-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      signupUsernameInput.value = chip.dataset.usg;
+      usernameSuggestionsEl.classList.remove('show');
+      checkUsernameLive();
+    });
+  });
+}
+let usernameCheckToken = 0;
+async function checkUsernameLive(){
+  const raw = signupUsernameInput.value;
+  const clean = normalizeUsername(raw);
+  usernameSuggestionsEl.classList.remove('show');
+  if(!clean || clean.length < 3){
+    usernameStatusEl.textContent = clean ? 'At least 3 characters (letters, numbers, _ or -).' : '';
+    usernameStatusEl.className = 'username-status';
+    return;
+  }
+  const myToken = ++usernameCheckToken;
+  usernameStatusEl.textContent = 'Checking availability…';
+  usernameStatusEl.className = 'username-status checking';
+  const taken = await isUsernameTaken(clean);
+  if(myToken !== usernameCheckToken) return; // a newer check superseded this one
+  if(taken){
+    usernameStatusEl.textContent = '✗ Username taken';
+    usernameStatusEl.className = 'username-status taken';
+    showUsernameSuggestions(clean);
+  } else {
+    usernameStatusEl.textContent = '✓ Username available';
+    usernameStatusEl.className = 'username-status ok';
+  }
+}
+let usernameDebounce = null;
+signupUsernameInput.addEventListener('input', ()=>{
+  clearTimeout(usernameDebounce);
+  usernameDebounce = setTimeout(checkUsernameLive, 400);
+});
+
 document.querySelectorAll('.auth-tab').forEach(tab=>{
   tab.addEventListener('click', ()=>{
     document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
@@ -1116,8 +1227,20 @@ signupForm.addEventListener('submit', async e=>{
   if(username.length < 3){ showAuthError('Username must be at least 3 characters (letters, numbers, _ or -).'); return; }
 
   const btn = document.getElementById('signupSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Creating…';
+  btn.disabled = true; btn.textContent = 'Checking username…';
   try{
+    // Pre-check availability against the lookup table so we can offer
+    // suggestions immediately, without spending a real signUp attempt.
+    const taken = await isUsernameTaken(username);
+    if(taken){
+      showAuthError('That username is already taken. Pick one of the suggestions below, or try another.');
+      usernameStatusEl.textContent = '✗ Username taken';
+      usernameStatusEl.className = 'username-status taken';
+      await showUsernameSuggestions(username);
+      return;
+    }
+
+    btn.textContent = 'Creating…';
     const phraseWords = genSeedPhrase(8);
     const phrase = phraseWords.join(' ');
     pendingSignup = {username, phrase};
@@ -1148,7 +1271,7 @@ document.getElementById('seedContinueBtn').addEventListener('click', async ()=>{
     const { data, error } = await sb.auth.signUp({ email, password });
     if(error){
       if(/already registered|already exists/i.test(error.message)){
-        throw new Error('That username is already taken.');
+        throw new Error('USERNAME_TAKEN');
       }
       throw error;
     }
@@ -1164,7 +1287,15 @@ document.getElementById('seedContinueBtn').addEventListener('click', async ()=>{
   } catch(err){
     seedRevealWrap.style.display = 'none';
     signupForm.style.display = 'block';
-    showAuthError(err.message || 'Could not create account.');
+    if(err.message === 'USERNAME_TAKEN'){
+      // Rare race condition: someone grabbed the username between our
+      // pre-check and this signUp call. Fall back to suggestions here too.
+      showAuthError('That username was just taken by someone else. Here are some alternatives:');
+      const takenUsername = pendingSignup ? pendingSignup.username : normalizeUsername(document.getElementById('signup_username').value);
+      await showUsernameSuggestions(takenUsername);
+    } else {
+      showAuthError(err.message || 'Could not create account.');
+    }
   } finally {
     btn.disabled = false; btn.textContent = 'Continue to GoldBook';
   }
@@ -1203,6 +1334,9 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   seedRevealWrap.style.display = 'none';
   loginForm.style.display = 'block';
   signupForm.style.display = 'none';
+  usernameStatusEl.textContent = '';
+  usernameStatusEl.className = 'username-status';
+  usernameSuggestionsEl.classList.remove('show');
   hideAuthMsgs();
 });
 
