@@ -215,8 +215,8 @@ label{font-size:11.5px; color:var(--text-mute); display:block; margin-bottom:6px
 @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
 
 /* Stat cards */
-.stats-row{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px;}
-@media(max-width:1100px){.stats-row{grid-template-columns:repeat(3,1fr);}}
+.stats-row{display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:20px;}
+@media(max-width:1250px){.stats-row{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr);}}
 .stat-card{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
@@ -522,6 +522,14 @@ tbody tr:hover{background:var(--surface-2);}
         </div>
         <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="authSubmitBtn">Log In</button>
       </form>
+      <form id="otpForm" style="display:none;">
+        <div class="field">
+          <label>6-digit code sent to your email</label>
+          <input type="text" id="otp_code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="otpSubmitBtn">Verify Email</button>
+        <button type="button" class="btn btn-ghost" style="width:100%; justify-content:center; margin-top:8px;" id="otpResendBtn">Resend code</button>
+      </form>
       <div class="auth-foot">Your trades are private — only you can see them.</div>
     </div>
     <div class="config-banner" id="configBanner" style="display:none;">
@@ -616,14 +624,18 @@ tbody tr:hover{background:var(--surface-2);}
           <button class="btn btn-primary btn-icon" data-goto="settings">Go to Settings</button>
         </div>
         <form id="tradeForm">
-          <div class="grid-2">
+          <div class="grid-3">
             <div class="field">
               <label>Date</label>
               <input type="date" id="f_date" required>
             </div>
             <div class="field">
-              <label>Session Time (optional)</label>
-              <input type="time" id="f_time">
+              <label>Trade Opening Time (optional)</label>
+              <input type="time" id="f_time_open">
+            </div>
+            <div class="field">
+              <label>Trade Closing Time (optional)</label>
+              <input type="time" id="f_time_close">
             </div>
           </div>
 
@@ -669,8 +681,12 @@ tbody tr:hover{background:var(--surface-2);}
             <span>Risk : Reward</span>
             <span>1 : <b id="rrLive">–</b></span>
           </div>
+          <div class="field" style="margin-top:8px;">
+            <label>Risk/Reward Tag</label>
+            <span class="tag setup" id="rrTagBadge">R:R –</span>
+          </div>
 
-          <div class="grid-2" style="margin-top:14px;">
+          <div class="grid-3" style="margin-top:14px;">
             <div class="field">
               <label>Result</label>
               <select id="f_result">
@@ -682,6 +698,10 @@ tbody tr:hover{background:var(--surface-2);}
             <div class="field">
               <label>P&amp;L (in R)</label>
               <input type="number" step="any" id="f_pnlr" placeholder="e.g. 2 or -1">
+            </div>
+            <div class="field">
+              <label>P&amp;L (Account Currency)</label>
+              <input type="number" step="any" id="f_pnlamount" placeholder="e.g. 150 or -80">
             </div>
           </div>
 
@@ -814,12 +834,34 @@ tbody tr:hover{background:var(--surface-2);}
       </div>
 
       <div class="panel form-panel">
+        <div class="panel-title" style="margin-bottom:10px;">Account Balance <small style="font-weight:400; color:var(--text-mute);">for the active account</small></div>
+        <p class="small-mute" style="margin-bottom:10px;">Set the starting balance for this account. Trades logged with a P&amp;L amount will be reflected against it.</p>
+        <div class="field" style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
+          <div style="flex:1; min-width:160px;">
+            <label>Starting Balance</label>
+            <input type="number" step="any" id="settingsStartBalance" placeholder="e.g. 10000">
+          </div>
+          <button class="btn btn-ghost" id="saveStartBalanceBtn">Save</button>
+        </div>
+        <div class="small-mute" style="margin-top:10px;">Current balance: <b id="settingsCurrentBalance" style="color:var(--gold);">–</b></div>
+      </div>
+
+      <div class="panel form-panel">
         <div class="panel-title" style="margin-bottom:10px;">Setups <small style="font-weight:400; color:var(--text-mute);">for the active account</small></div>
         <div class="field" style="display:flex; gap:8px;">
           <input type="text" id="newSetupName" placeholder="e.g. NY Reversal, 0.618 Fib Retracement">
           <button class="btn btn-ghost btn-icon" id="addSetupBtn">Add</button>
         </div>
         <div id="customSetupsList" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="panel form-panel">
+        <div class="panel-title" style="margin-bottom:10px;">Risk/Reward Tag</div>
+        <p class="small-mute" style="margin-bottom:8px;">The Risk/Reward tag is auto-calculated from Entry, Stop Loss and Target on each trade, shown like a setup tag.</p>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" id="showRRTagToggle" style="width:auto; min-height:unset;">
+          <span style="font-size:13px; color:var(--text);">Show Risk/Reward tag column in Trade Log</span>
+        </label>
       </div>
 
       <div class="panel form-panel">
@@ -875,9 +917,28 @@ tbody tr:hover{background:var(--surface-2);}
       <label>Base Currency</label>
       <input type="text" id="am_currency" placeholder="USD" value="USD">
     </div>
+    <div class="field">
+      <label>Starting Balance</label>
+      <input type="number" step="any" id="am_balance" placeholder="e.g. 10000">
+    </div>
     <div style="display:flex; gap:10px;">
       <button class="btn btn-primary" id="accountModalSave">Save</button>
       <button class="btn btn-ghost" id="accountModalCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trade detail / edit modal -->
+<div class="modal-bg" id="tradeModalBg">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title" id="tradeModalTitle">Trade Detail</div>
+    <div id="tradeModalView"></div>
+    <form id="tradeEditForm" style="display:none;"></form>
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+      <button class="btn btn-ghost" id="tradeModalEditBtn">Edit</button>
+      <button class="btn btn-primary" id="tradeModalSaveBtn" style="display:none;">Save Changes</button>
+      <button class="btn btn-ghost" id="tradeModalCancelEditBtn" style="display:none;">Cancel</button>
+      <button class="btn btn-ghost" id="tradeModalCloseBtn" style="margin-left:auto;">Close</button>
     </div>
   </div>
 </div>
@@ -891,6 +952,22 @@ tbody tr:hover{background:var(--surface-2);}
       is safe to use client-side -- it's protected by the Row
       Level Security policies in schema.sql. Never paste the
       service_role key here.)
+   3. NEW COLUMNS NEEDED — run this once in the SQL editor for the
+      trade-time, balance, RR-tag and P&L-amount features below:
+
+      alter table goldbook_trades add column if not exists trade_time_close time;
+      alter table goldbook_trades add column if not exists rr_ratio text;
+      alter table goldbook_trades add column if not exists pnl_amount numeric;
+      alter table goldbook_accounts add column if not exists starting_balance numeric default 0;
+      alter table goldbook_accounts add column if not exists show_rr_tag boolean default true;
+
+      (trade_time is reused as the opening time — no rename needed.)
+   4. EMAIL OTP — to have Supabase email an actual 6-digit code
+      (instead of only a confirmation link) go to Authentication ->
+      Email Templates -> "Confirm signup" in your Supabase dashboard
+      and make sure the template includes {{ .Token }} (Supabase's
+      default template already supports this). No code changes are
+      needed beyond what's already wired up below.
 ============================================================ */
 const SUPABASE_URL = 'https://silqfmzkwzuoitzpssvo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_avARIs_XvY8heQzq2Y-D4Q_mgweZawA';
@@ -943,7 +1020,10 @@ const authForm = document.getElementById('authForm');
 const authError = document.getElementById('authError');
 const authInfo = document.getElementById('authInfo');
 const authSubmitBtn = document.getElementById('authSubmitBtn');
+const otpForm = document.getElementById('otpForm');
+const otpSubmitBtn = document.getElementById('otpSubmitBtn');
 let authMode = 'login';
+let pendingOtpEmail = null;
 
 document.querySelectorAll('.auth-tab').forEach(tab=>{
   tab.addEventListener('click', ()=>{
@@ -951,6 +1031,9 @@ document.querySelectorAll('.auth-tab').forEach(tab=>{
     document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
     tab.classList.add('active');
     hideAuthMsgs();
+    otpForm.style.display = 'none';
+    authForm.style.display = 'block';
+    pendingOtpEmail = null;
     if(authMode==='login'){
       document.getElementById('authTitle').textContent = 'Welcome back';
       document.getElementById('authSub').textContent = 'Log in to access your trading journal.';
@@ -992,7 +1075,10 @@ authForm.addEventListener('submit', async e=>{
       const {data, error} = await sb.auth.signUp({email, password});
       if(error) throw error;
       if(data.user && !data.session){
-        showAuthInfo('Account created. Check your email to confirm, then log in.');
+        pendingOtpEmail = email;
+        showAuthInfo('Account created. Enter the 6-digit code we emailed you to verify your address.');
+        authForm.style.display = 'none';
+        otpForm.style.display = 'block';
         authSubmitBtn.disabled = false;
         authSubmitBtn.textContent = 'Sign Up';
         return;
@@ -1006,6 +1092,38 @@ authForm.addEventListener('submit', async e=>{
   }
 });
 
+otpForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  hideAuthMsgs();
+  if(!CONFIGURED || !pendingOtpEmail) return;
+  const token = document.getElementById('otp_code').value.trim();
+  otpSubmitBtn.disabled = true; otpSubmitBtn.textContent = 'Verifying…';
+  try{
+    const {data, error} = await sb.auth.verifyOtp({email: pendingOtpEmail, token, type:'signup'});
+    if(error) throw error;
+    otpForm.style.display = 'none';
+    authForm.style.display = 'block';
+    otpForm.reset();
+    pendingOtpEmail = null;
+    if(data.user) await onLoggedIn(data.user);
+  } catch(err){
+    showAuthError(err.message || 'Invalid or expired code.');
+  } finally {
+    otpSubmitBtn.disabled = false; otpSubmitBtn.textContent = 'Verify Email';
+  }
+});
+document.getElementById('otpResendBtn').addEventListener('click', async ()=>{
+  if(!CONFIGURED || !pendingOtpEmail) return;
+  hideAuthMsgs();
+  try{
+    const {error} = await sb.auth.resend({type:'signup', email: pendingOtpEmail});
+    if(error) throw error;
+    showAuthInfo('A new code has been sent to your email.');
+  } catch(err){
+    showAuthError(err.message || 'Could not resend code.');
+  }
+});
+
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   if(sb) await sb.auth.signOut();
   stopForexClock();
@@ -1014,6 +1132,10 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   appRoot.classList.remove('show');
   authScreen.style.display = 'flex';
   authForm.reset();
+  otpForm.reset();
+  otpForm.style.display = 'none';
+  authForm.style.display = 'block';
+  pendingOtpEmail = null;
   hideAuthMsgs();
 });
 
@@ -1092,6 +1214,7 @@ function openAccountModal(mode, account){
   document.getElementById('am_name').value = account ? account.account_name : '';
   document.getElementById('am_tag').value = account ? (account.journal_tag||'') : '';
   document.getElementById('am_currency').value = account ? (account.base_currency||'USD') : 'USD';
+  document.getElementById('am_balance').value = account ? (account.starting_balance ?? '') : '';
   document.getElementById('accountModalCancel').style.display = mode==='first' ? 'none' : 'inline-flex';
   document.getElementById('accountModalBg').classList.add('open');
 }
@@ -1101,20 +1224,21 @@ document.getElementById('accountModalSave').addEventListener('click', async ()=>
   const name = document.getElementById('am_name').value.trim();
   const tag = document.getElementById('am_tag').value.trim();
   const currency = document.getElementById('am_currency').value.trim() || 'USD';
+  const startingBalance = document.getElementById('am_balance').value !== '' ? parseFloat(document.getElementById('am_balance').value) : 0;
   if(!number || !name){ alert('Account number and name are required.'); return; }
   const btn = document.getElementById('accountModalSave');
   btn.disabled = true; btn.textContent = 'Saving…';
   try{
     if(accountModalMode==='edit' && editingAccountId){
       const { data, error } = await sb.from('goldbook_accounts')
-        .update({account_number:number, account_name:name, journal_tag:tag, base_currency:currency})
+        .update({account_number:number, account_name:name, journal_tag:tag, base_currency:currency, starting_balance:startingBalance})
         .eq('id', editingAccountId).select().single();
       if(error) throw error;
       accounts = accounts.map(a=>a.id===data.id?data:a);
       if(currentAccount && currentAccount.id===data.id) currentAccount = data;
     } else {
       const { data, error } = await sb.from('goldbook_accounts')
-        .insert({user_id:currentUser.id, account_number:number, account_name:name, journal_tag:tag, base_currency:currency, widgets_config:DEFAULT_WIDGETS, sort_order:accounts.length})
+        .insert({user_id:currentUser.id, account_number:number, account_name:name, journal_tag:tag, base_currency:currency, starting_balance:startingBalance, widgets_config:DEFAULT_WIDGETS, sort_order:accounts.length})
         .select().single();
       if(error) throw error;
       accounts.push(data);
@@ -1173,9 +1297,9 @@ async function saveWidgetsConfig(){
 ============================================================ */
 function dbToTrade(r){
   return {
-    id:r.id, date:r.trade_date, time:r.trade_time, setup:r.setup, direction:r.direction,
+    id:r.id, date:r.trade_date, time_open:r.trade_time, time_close:r.trade_time_close, setup:r.setup, direction:r.direction,
     symbol:r.symbol, entry:r.entry, sl:r.sl, tp:r.tp, entrynotes:r.entry_notes, result:r.result,
-    pnlr:r.pnlr, emotion:r.emotion, followed:r.followed, notes:r.notes,
+    pnlr:r.pnlr, pnlamount:r.pnl_amount, rr_ratio:r.rr_ratio, emotion:r.emotion, followed:r.followed, notes:r.notes,
   };
 }
 function dbToNote(r){ return {id:r.id, date:r.note_date, text:r.note_text}; }
@@ -1253,6 +1377,18 @@ setInterval(tickClock,1000); tickClock();
 /* ============================================================
    Metrics
 ============================================================ */
+function startingBalance(){ return parseFloat(currentAccount && currentAccount.starting_balance) || 0; }
+function currentBalance(){
+  const totalPnlAmount = trades.reduce((s,t)=>s+(parseFloat(t.pnlamount)||0),0);
+  return startingBalance() + totalPnlAmount;
+}
+function runningBalanceMap(){
+  const map = {};
+  let bal = startingBalance();
+  const sorted = [...trades].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  sorted.forEach(t=>{ bal += (parseFloat(t.pnlamount)||0); map[t.id] = bal; });
+  return map;
+}
 function computeMetrics(list){
   const n = list.length;
   const wins = list.filter(t=>t.result==='Win');
@@ -1347,6 +1483,7 @@ function renderStatsWidget(){
     {label:'Profit Factor', val: isFinite(m.profitFactor)? m.profitFactor.toFixed(2) : '∞', cls: m.profitFactor>=1.5?'pos':(m.profitFactor<1?'neg':''), foot:'gross win / gross loss'},
     {label:'Avg Win / Loss', val: m.avgWin.toFixed(2)+'R / '+m.avgLoss.toFixed(2)+'R', cls:'', foot:'per trade, in R'},
     {label:'Best Setup', val: bestSetup(), cls:'gold', foot:'by win rate, min. 5 trades'},
+    {label:'Account Balance', val: currentBalance().toFixed(2), cls: currentBalance()>=startingBalance()?'pos':'neg', foot:`Starting: ${startingBalance().toFixed(2)}`},
   ];
   document.getElementById('w-stats').innerHTML = `<div class="stats-row">` + stats.map(s=>`
     <div class="stat-card">
@@ -1603,10 +1740,21 @@ function stopForexClock(){ if(fxClockTimer){ clearInterval(fxClockTimer); fxCloc
 /* ============================================================
    Trade table renderer (shared)
 ============================================================ */
+function rrRatioValue(t){
+  if(t.rr_ratio) return t.rr_ratio;
+  const entry=parseFloat(t.entry), sl=parseFloat(t.sl), tp=parseFloat(t.tp);
+  if(isNaN(entry)||isNaN(sl)||isNaN(tp)) return null;
+  const risk=Math.abs(entry-sl), reward=Math.abs(tp-entry);
+  if(risk===0) return null;
+  return '1:'+(reward/risk).toFixed(2);
+}
+function showRRTag(){ return !currentAccount || currentAccount.show_rr_tag!==false; }
 function tradesTable(list, withDelete){
   if(!list.length) return `<div class="empty-state"><div class="es-icon">◇</div><div class="es-title">No trades yet</div><div>Log your first trade to see it here.</div></div>`;
+  const showRR = showRRTag();
+  const balMap = withDelete ? runningBalanceMap() : null;
   const rows = list.map(t=>`
-    <tr>
+    <tr ${withDelete?`class="trade-row" data-open="${t.id}" style="cursor:pointer;"`:''}>
       <td>${fmtDate(t.date)}</td>
       <td><span class="tag setup">${escapeHtml(t.setup||'')}</span></td>
       <td>${escapeHtml(t.symbol||'—')}</td>
@@ -1614,11 +1762,13 @@ function tradesTable(list, withDelete){
       <td style="font-family:var(--mono);">${t.entry ?? '—'}</td>
       <td>${resultPill(t.result)}</td>
       <td class="${(parseFloat(t.pnlr)||0)>=0?'pnl-pos':'pnl-neg'}">${t.pnlr!==''&&t.pnlr!==undefined&&t.pnlr!==null?(parseFloat(t.pnlr)>=0?'+':'')+t.pnlr+'R':'–'}</td>
+      ${showRR?`<td>${rrRatioValue(t)?`<span class="tag setup">${escapeHtml(rrRatioValue(t))}</span>`:'–'}</td>`:''}
       <td><span class="tag">${escapeHtml(t.emotion||'–')}</span></td>
+      ${withDelete?`<td style="font-family:var(--mono);">${t.pnlamount!==undefined&&t.pnlamount!==null&&t.pnlamount!==''?(balMap[t.id]!==undefined?balMap[t.id].toFixed(2):'–'):'–'}</td>`:''}
       ${withDelete?`<td class="row-del" data-del="${t.id}">✕</td>`:''}
     </tr>`).join('');
   return `<table>
-    <thead><tr><th>Date</th><th>Setup</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Result</th><th>P&amp;L</th><th>Emotion</th>${withDelete?'<th></th>':''}</tr></thead>
+    <thead><tr><th>Date</th><th>Setup</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Result</th><th>P&amp;L</th>${showRR?'<th>R:R</th>':''}<th>Emotion</th>${withDelete?'<th>Balance</th>':''}${withDelete?'<th></th>':''}</tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
@@ -1670,11 +1820,13 @@ function calcRR(){
   const entry = parseFloat(document.getElementById('f_entry').value);
   const sl = parseFloat(document.getElementById('f_sl').value);
   const tp = parseFloat(document.getElementById('f_tp').value);
-  if(isNaN(entry)||isNaN(sl)||isNaN(tp)){ document.getElementById('rrLive').textContent='–'; return; }
+  if(isNaN(entry)||isNaN(sl)||isNaN(tp)){ document.getElementById('rrLive').textContent='–'; document.getElementById('rrTagBadge').textContent='R:R –'; return; }
   const risk = Math.abs(entry-sl);
   const reward = Math.abs(tp-entry);
-  if(risk===0){ document.getElementById('rrLive').textContent='–'; return; }
-  document.getElementById('rrLive').textContent = (reward/risk).toFixed(2);
+  if(risk===0){ document.getElementById('rrLive').textContent='–'; document.getElementById('rrTagBadge').textContent='R:R –'; return; }
+  const ratio = (reward/risk).toFixed(2);
+  document.getElementById('rrLive').textContent = ratio;
+  document.getElementById('rrTagBadge').textContent = 'R:R 1:'+ratio;
 }
 ['f_entry','f_sl','f_tp'].forEach(id=>document.getElementById(id).addEventListener('input', calcRR));
 
@@ -1685,20 +1837,26 @@ document.getElementById('tradeForm').addEventListener('submit', async e=>{
   const emoEl = document.querySelector('.emo-chip.checked');
   const submitBtn = e.target.querySelector('button[type=submit]');
   submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
+  const entryVal = document.getElementById('f_entry').value;
+  const slVal = document.getElementById('f_sl').value;
+  const tpVal = document.getElementById('f_tp').value;
   const row = {
     user_id: currentUser.id,
     account_id: currentAccount.id,
     trade_date: document.getElementById('f_date').value || new Date().toISOString().slice(0,10),
-    trade_time: document.getElementById('f_time').value || null,
+    trade_time: document.getElementById('f_time_open').value || null,
+    trade_time_close: document.getElementById('f_time_close').value || null,
     setup: setupEl ? setupEl.value : allSetups()[0],
     direction: document.getElementById('f_direction').value,
     symbol: document.getElementById('f_symbol').value || null,
-    entry: document.getElementById('f_entry').value || null,
-    sl: document.getElementById('f_sl').value || null,
-    tp: document.getElementById('f_tp').value || null,
+    entry: entryVal || null,
+    sl: slVal || null,
+    tp: tpVal || null,
     entry_notes: document.getElementById('f_entrynotes').value || null,
     result: document.getElementById('f_result').value,
     pnlr: document.getElementById('f_pnlr').value || null,
+    pnl_amount: document.getElementById('f_pnlamount').value || null,
+    rr_ratio: rrRatioValue({entry:entryVal, sl:slVal, tp:tpVal}),
     emotion: emoEl ? emoEl.dataset.emo : '',
     followed: document.getElementById('f_followed').value,
     notes: document.getElementById('f_notes').value,
@@ -1711,6 +1869,7 @@ document.getElementById('tradeForm').addEventListener('submit', async e=>{
   document.querySelectorAll('.emo-chip').forEach(c=>c.classList.remove('checked'));
   renderAddTrade();
   document.getElementById('rrLive').textContent='–';
+  document.getElementById('rrTagBadge').textContent='R:R –';
   showView('dashboard');
 });
 
@@ -1732,12 +1891,19 @@ function applyLogFilters(){
   if(search) list = list.filter(t=>(t.notes||'').toLowerCase().includes(search));
   document.getElementById('logTableWrap').innerHTML = tradesTable(list, true);
   document.querySelectorAll('[data-del]').forEach(el=>{
-    el.addEventListener('click', async ()=>{
+    el.addEventListener('click', async (ev)=>{
+      ev.stopPropagation();
       const id = el.dataset.del;
       const { error } = await sb.from('goldbook_trades').delete().eq('id', id);
       if(error){ alert('Could not delete: ' + error.message); return; }
       trades = trades.filter(t=>t.id!==id);
       applyLogFilters();
+    });
+  });
+  document.querySelectorAll('[data-open]').forEach(el=>{
+    el.addEventListener('click', (ev)=>{
+      if(ev.target.closest('[data-del]')) return;
+      openTradeModal(el.dataset.open);
     });
   });
 }
@@ -1749,6 +1915,162 @@ document.getElementById('clearFilters').addEventListener('click', ()=>{
   document.getElementById('filterSearch').value='';
   applyLogFilters();
 });
+
+/* ============================================================
+   Trade Detail / Edit modal
+============================================================ */
+let currentModalTradeId = null;
+function openTradeModal(id){
+  currentModalTradeId = id;
+  const t = trades.find(x=>String(x.id)===String(id));
+  if(!t) return;
+  renderTradeModalView(t);
+  document.getElementById('tradeModalView').style.display = 'block';
+  document.getElementById('tradeEditForm').style.display = 'none';
+  document.getElementById('tradeModalEditBtn').style.display = 'inline-flex';
+  document.getElementById('tradeModalSaveBtn').style.display = 'none';
+  document.getElementById('tradeModalCancelEditBtn').style.display = 'none';
+  document.getElementById('tradeModalBg').classList.add('open');
+}
+function renderTradeModalView(t){
+  document.getElementById('tradeModalTitle').textContent = `${fmtDate(t.date)} · ${t.symbol||'—'}`;
+  const rr = rrRatioValue(t);
+  const rows = [
+    ['Date', fmtDate(t.date)],
+    ['Trade Opening Time', t.time_open || '—'],
+    ['Trade Closing Time', t.time_close || '—'],
+    ['Setup', t.setup || '—'],
+    ['Direction', t.direction || '—'],
+    ['Symbol / Pair', t.symbol || '—'],
+    ['Entry Price', t.entry ?? '—'],
+    ['Stop Loss', t.sl ?? '—'],
+    ['Target', t.tp ?? '—'],
+    ['Entry Level Notes', t.entrynotes || '—'],
+    ['Risk : Reward', rr || '—'],
+    ['Result', t.result || '—'],
+    ['P&L (in R)', t.pnlr!==null&&t.pnlr!==undefined&&t.pnlr!=='' ? t.pnlr+'R' : '—'],
+    ['P&L (Account Currency)', t.pnlamount!==null&&t.pnlamount!==undefined&&t.pnlamount!=='' ? t.pnlamount : '—'],
+    ['Emotional State', t.emotion || '—'],
+    ['Followed Plan', t.followed || '—'],
+    ['Notes / Trade Thesis', t.notes || '—'],
+  ];
+  document.getElementById('tradeModalView').innerHTML = rows.map(([label,val])=>`
+    <div style="display:flex; justify-content:space-between; gap:14px; padding:8px 0; border-bottom:1px solid var(--border); font-size:12.5px;">
+      <span class="small-mute">${escapeHtml(label)}</span>
+      <span style="text-align:right; max-width:60%;">${escapeHtml(String(val))}</span>
+    </div>`).join('');
+}
+function renderTradeEditForm(t){
+  const form = document.getElementById('tradeEditForm');
+  form.innerHTML = `
+    <div class="grid-3">
+      <div class="field"><label>Date</label><input type="date" id="em_date" value="${t.date||''}" required></div>
+      <div class="field"><label>Trade Opening Time</label><input type="time" id="em_time_open" value="${t.time_open||''}"></div>
+      <div class="field"><label>Trade Closing Time</label><input type="time" id="em_time_close" value="${t.time_close||''}"></div>
+    </div>
+    <div class="field"><label>Setup</label>
+      <select id="em_setup">${allSetups().map(s=>`<option value="${escapeHtml(s)}" ${t.setup===s?'selected':''}>${escapeHtml(s)}</option>`).join('')}</select>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Direction</label>
+        <select id="em_direction"><option ${t.direction==='Long'?'selected':''}>Long</option><option ${t.direction==='Short'?'selected':''}>Short</option></select>
+      </div>
+      <div class="field"><label>Symbol / Pair</label><input type="text" id="em_symbol" value="${escapeHtml(t.symbol||'')}"></div>
+      <div class="field"><label>Entry Level Notes</label><input type="text" id="em_entrynotes" value="${escapeHtml(t.entrynotes||'')}"></div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Entry Price</label><input type="number" step="any" id="em_entry" value="${t.entry??''}" required></div>
+      <div class="field"><label>Stop Loss</label><input type="number" step="any" id="em_sl" value="${t.sl??''}" required></div>
+      <div class="field"><label>Target</label><input type="number" step="any" id="em_tp" value="${t.tp??''}" required></div>
+    </div>
+    <div class="grid-3">
+      <div class="field"><label>Result</label>
+        <select id="em_result">${['Win','Loss','Breakeven'].map(r=>`<option ${t.result===r?'selected':''}>${r}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>P&amp;L (in R)</label><input type="number" step="any" id="em_pnlr" value="${t.pnlr??''}"></div>
+      <div class="field"><label>P&amp;L (Account Currency)</label><input type="number" step="any" id="em_pnlamount" value="${t.pnlamount??''}"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Emotional State</label>
+        <select id="em_emotion">${['Calm','Confident','Anxious','FOMO','Revenge','Impatient'].map(e=>`<option ${t.emotion===e?'selected':''}>${e}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Followed Plan?</label>
+        <select id="em_followed">${['Yes','No','Partial'].map(f=>`<option ${t.followed===f?'selected':''}>${f}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field"><label>Notes / Trade Thesis</label><textarea id="em_notes" rows="4">${escapeHtml(t.notes||'')}</textarea></div>
+  `;
+}
+document.getElementById('tradeModalEditBtn').addEventListener('click', ()=>{
+  const t = trades.find(x=>String(x.id)===String(currentModalTradeId));
+  if(!t) return;
+  renderTradeEditForm(t);
+  document.getElementById('tradeModalView').style.display = 'none';
+  document.getElementById('tradeEditForm').style.display = 'block';
+  document.getElementById('tradeModalEditBtn').style.display = 'none';
+  document.getElementById('tradeModalSaveBtn').style.display = 'inline-flex';
+  document.getElementById('tradeModalCancelEditBtn').style.display = 'inline-flex';
+});
+document.getElementById('tradeModalCancelEditBtn').addEventListener('click', ()=>{
+  const t = trades.find(x=>String(x.id)===String(currentModalTradeId));
+  if(!t) return;
+  renderTradeModalView(t);
+  document.getElementById('tradeModalView').style.display = 'block';
+  document.getElementById('tradeEditForm').style.display = 'none';
+  document.getElementById('tradeModalEditBtn').style.display = 'inline-flex';
+  document.getElementById('tradeModalSaveBtn').style.display = 'none';
+  document.getElementById('tradeModalCancelEditBtn').style.display = 'none';
+});
+document.getElementById('tradeModalSaveBtn').addEventListener('click', async ()=>{
+  const id = currentModalTradeId;
+  const entry = document.getElementById('em_entry').value;
+  const sl = document.getElementById('em_sl').value;
+  const tp = document.getElementById('em_tp').value;
+  const rr = rrRatioValue({entry, sl, tp});
+  const btn = document.getElementById('tradeModalSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const updates = {
+    trade_date: document.getElementById('em_date').value,
+    trade_time: document.getElementById('em_time_open').value || null,
+    trade_time_close: document.getElementById('em_time_close').value || null,
+    setup: document.getElementById('em_setup').value,
+    direction: document.getElementById('em_direction').value,
+    symbol: document.getElementById('em_symbol').value || null,
+    entry: entry || null,
+    sl: sl || null,
+    tp: tp || null,
+    entry_notes: document.getElementById('em_entrynotes').value || null,
+    result: document.getElementById('em_result').value,
+    pnlr: document.getElementById('em_pnlr').value || null,
+    pnl_amount: document.getElementById('em_pnlamount').value || null,
+    rr_ratio: rr,
+    emotion: document.getElementById('em_emotion').value,
+    followed: document.getElementById('em_followed').value,
+    notes: document.getElementById('em_notes').value,
+  };
+  try{
+    const { data, error } = await sb.from('goldbook_trades').update(updates).eq('id', id).select().single();
+    if(error) throw error;
+    trades = trades.map(t=>String(t.id)===String(id) ? dbToTrade(data) : t);
+    renderTradeModalView(dbToTrade(data));
+    document.getElementById('tradeModalView').style.display = 'block';
+    document.getElementById('tradeEditForm').style.display = 'none';
+    document.getElementById('tradeModalEditBtn').style.display = 'inline-flex';
+    document.getElementById('tradeModalSaveBtn').style.display = 'none';
+    document.getElementById('tradeModalCancelEditBtn').style.display = 'none';
+    applyLogFilters();
+    if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+  } catch(err){
+    alert('Could not save changes: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Changes';
+  }
+});
+document.getElementById('tradeModalCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('tradeModalBg').classList.remove('open');
+  currentModalTradeId = null;
+});
+document.getElementById('tradeModalBg').addEventListener('click', e=>{ if(e.target.id==='tradeModalBg') e.target.classList.remove('open'); });
 
 /* ============================================================
    Reports
@@ -1894,11 +2216,44 @@ function renderSettings(){
   renderAccountsList();
   renderSetupsList();
   renderWidgetManager();
+  document.getElementById('settingsStartBalance').value = startingBalance() || '';
+  document.getElementById('settingsCurrentBalance').textContent = currentBalance().toFixed(2) + ' ' + (currentAccount.base_currency||'USD');
+  document.getElementById('showRRTagToggle').checked = showRRTag();
 }
 document.getElementById('saveProfileBtn').addEventListener('click', async ()=>{
   prefs.display_name = document.getElementById('displayNameInput').value.trim();
   await savePreferences();
   alert('Saved.');
+});
+document.getElementById('saveStartBalanceBtn').addEventListener('click', async ()=>{
+  const val = parseFloat(document.getElementById('settingsStartBalance').value) || 0;
+  const btn = document.getElementById('saveStartBalanceBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try{
+    const { data, error } = await sb.from('goldbook_accounts').update({starting_balance: val}).eq('id', currentAccount.id).select().single();
+    if(error) throw error;
+    currentAccount = data;
+    accounts = accounts.map(a=>a.id===data.id?data:a);
+    renderSettings();
+    if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+  } catch(err){
+    alert('Could not save starting balance: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save';
+  }
+});
+document.getElementById('showRRTagToggle').addEventListener('change', async e=>{
+  const val = e.target.checked;
+  try{
+    const { data, error } = await sb.from('goldbook_accounts').update({show_rr_tag: val}).eq('id', currentAccount.id).select().single();
+    if(error) throw error;
+    currentAccount = data;
+    accounts = accounts.map(a=>a.id===data.id?data:a);
+    if(document.getElementById('view-log').classList.contains('active')) applyLogFilters();
+  } catch(err){
+    alert('Could not save preference: ' + err.message);
+    e.target.checked = !val;
+  }
 });
 function renderThemeRow(){
   document.getElementById('themeRow').innerHTML = THEMES.map(t=>`
@@ -2010,13 +2365,13 @@ function renderWidgetManager(){
    Export / Import (JSON + CSV)
 ============================================================ */
 function tradesToCSV(list){
-  const headers = ['Date','Time','Setup','Symbol','Direction','Entry','SL','TP','EntryNotes','Result','PnL_R','Emotion','FollowedPlan','Notes'];
+  const headers = ['Date','TimeOpen','TimeClose','Setup','Symbol','Direction','Entry','SL','TP','EntryNotes','Result','PnL_R','PnL_Amount','RR_Ratio','Emotion','FollowedPlan','Notes'];
   const escCsv = v => {
     if(v===null||v===undefined) return '';
     const s = String(v);
     return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
   };
-  const rows = list.map(t=>[t.date,t.time||'',t.setup||'',t.symbol||'',t.direction||'',t.entry??'',t.sl??'',t.tp??'',t.entrynotes||'',t.result||'',t.pnlr??'',t.emotion||'',t.followed||'',t.notes||''].map(escCsv).join(','));
+  const rows = list.map(t=>[t.date,t.time_open||'',t.time_close||'',t.setup||'',t.symbol||'',t.direction||'',t.entry??'',t.sl??'',t.tp??'',t.entrynotes||'',t.result||'',t.pnlr??'',t.pnlamount??'',t.rr_ratio||rrRatioValue(t)||'',t.emotion||'',t.followed||'',t.notes||''].map(escCsv).join(','));
   return headers.join(',') + '\n' + rows.join('\n');
 }
 function downloadBlob(content, filename, type){
@@ -2042,9 +2397,9 @@ document.getElementById('importFile').addEventListener('change', async e=>{
       const data = JSON.parse(ev.target.result);
       if(data.trades && data.trades.length){
         const rows = data.trades.map(t=>({
-          user_id:currentUser.id, account_id:currentAccount.id, trade_date:t.date, trade_time:t.time||null, setup:t.setup,
+          user_id:currentUser.id, account_id:currentAccount.id, trade_date:t.date, trade_time:t.time_open||t.time||null, trade_time_close:t.time_close||null, setup:t.setup,
           direction:t.direction, symbol:t.symbol||null, entry:t.entry||null, sl:t.sl||null,
-          tp:t.tp||null, entry_notes:t.entrynotes||null, result:t.result, pnlr:t.pnlr||null, emotion:t.emotion, followed:t.followed, notes:t.notes,
+          tp:t.tp||null, entry_notes:t.entrynotes||null, result:t.result, pnlr:t.pnlr||null, pnl_amount:t.pnlamount||null, rr_ratio:t.rr_ratio||null, emotion:t.emotion, followed:t.followed, notes:t.notes,
         }));
         await sb.from('goldbook_trades').insert(rows);
       }
