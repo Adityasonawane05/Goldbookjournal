@@ -257,7 +257,32 @@ label{font-size:11.5px; color:var(--text-mute); display:block; margin-bottom:6px
 
 #dashboardWidgets{display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start;}
 #dashboardWidgets .wfull{grid-column:1/-1;}
-@media(max-width:1000px){#dashboardWidgets{grid-template-columns:1fr;}}
+@media(max-width:1000px){
+  #dashboardWidgets{grid-template-columns:1fr;}
+  .dash-widget{grid-column:span 1 !important;}
+}
+/* ---------- Dashboard widget drag & resize ---------- */
+.dash-widget{position:relative; transition:outline-color .15s;}
+.dash-widget.dragging{opacity:.4;}
+.dash-widget.drag-over{outline:2px dashed var(--gold); outline-offset:3px; border-radius:10px;}
+.dash-drag-handle{
+  position:absolute; top:10px; right:36px; cursor:grab; color:var(--text-faint); font-size:14px;
+  padding:4px 7px; border-radius:6px; z-index:6; user-select:none; line-height:1; background:transparent;
+  opacity:0; transition:opacity .15s, color .15s, background .15s;
+}
+.dash-widget:hover .dash-drag-handle{opacity:1;}
+.dash-drag-handle:hover{color:var(--gold); background:var(--surface-2);}
+.dash-drag-handle:active{cursor:grabbing;}
+.dash-resize-handle{
+  position:absolute; bottom:6px; right:8px; cursor:nwse-resize; z-index:6;
+  color:var(--text-faint); font-size:14px; line-height:1; opacity:0; transition:opacity .15s, color .15s;
+  padding:2px; user-select:none;
+}
+.dash-widget:hover .dash-resize-handle{opacity:1;}
+.dash-resize-handle:hover{color:var(--gold);}
+@media(max-width:880px){
+  .dash-drag-handle, .dash-resize-handle{opacity:.5;}
+}
 .two-col{display:grid; grid-template-columns:1.4fr 1fr; gap:18px;}
 @media(max-width:1000px){.two-col{grid-template-columns:1fr;}}
 
@@ -671,6 +696,7 @@ tbody tr:hover{background:var(--surface-2);}
         <span>You haven't added any setups yet. Add your first setup to start tagging trades.</span>
         <button class="btn btn-primary btn-icon" data-goto="settings">Add setup</button>
       </div>
+      <p class="small-mute" style="margin-bottom:12px;">Hover a widget — drag the <b>⠿</b> handle to reorder, or drag the corner handle to resize.</p>
       <div id="dashboardWidgets"></div>
     </div>
 
@@ -940,7 +966,7 @@ tbody tr:hover{background:var(--surface-2);}
 
       <div class="panel form-panel">
         <div class="panel-title" style="margin-bottom:10px;">Dashboard Widgets</div>
-        <p class="small-mute" style="margin-bottom:6px;">Show, hide, and reorder what appears on your dashboard.</p>
+        <p class="small-mute" style="margin-bottom:6px;">Show, hide, and reorder what appears on your dashboard. You can also drag widgets directly on the Dashboard to reorder or resize them.</p>
         <div id="widgetManageList"></div>
       </div>
 
@@ -1083,18 +1109,32 @@ const THEMES = [
 ];
 
 const DEFAULT_WIDGETS = [
-  {key:'stats', visible:true},
-  {key:'equity', visible:true},
-  {key:'score', visible:true},
-  {key:'forexclock', visible:true},
-  {key:'calendar', visible:true},
-  {key:'recent', visible:true},
+  {key:'stats', visible:true, w:2, h:null},
+  {key:'equity', visible:true, w:2, h:null},
+  {key:'score', visible:true, w:1, h:null},
+  {key:'forexclock', visible:true, w:1, h:null},
+  {key:'calendar', visible:true, w:2, h:null},
+  {key:'recent', visible:true, w:2, h:null},
 ];
 const WIDGET_LABELS = {
   stats:'Stats Row', equity:'Equity Curve', score:'Session Score',
   forexclock:'Forex Sessions Clock', calendar:'Calendar Heatmap', recent:'Recent Trades',
 };
 const WIDGET_WIDE = {stats:true, equity:true, calendar:true, recent:true, score:false, forexclock:false};
+
+// Ensures every widget config entry has the fields the drag/resize
+// system needs (w = column span 1 or 2, h = explicit height in px or
+// null for auto). Old saved configs (pre-resize feature) get sane
+// defaults filled in on the fly; nothing is written to the DB until
+// the user actually drags/resizes/reorders something.
+function normalizeWidgetsConfig(cfg){
+  return (cfg||[]).map(w=>({
+    key:w.key,
+    visible: w.visible!==false,
+    w: w.w || (WIDGET_WIDE[w.key] ? 2 : 1),
+    h: w.h || null,
+  }));
+}
 
 let trades = [];
 let notes = [];
@@ -1554,8 +1594,10 @@ function refreshBrandLabels(){
 
 async function ensureWidgetsConfig(){
   if(!currentAccount.widgets_config || !currentAccount.widgets_config.length){
-    currentAccount.widgets_config = DEFAULT_WIDGETS.slice();
+    currentAccount.widgets_config = DEFAULT_WIDGETS.map(w=>({...w}));
     await sb.from('goldbook_accounts').update({widgets_config: currentAccount.widgets_config}).eq('id', currentAccount.id);
+  } else {
+    currentAccount.widgets_config = normalizeWidgetsConfig(currentAccount.widgets_config);
   }
 }
 async function saveWidgetsConfig(){
@@ -1715,7 +1757,8 @@ function bestSetup(){
 }
 
 /* ============================================================
-   Dashboard — customizable widget system
+   Dashboard — customizable widget system (drag to reorder,
+   drag the corner handle to resize width/height)
 ============================================================ */
 let calMonth = new Date();
 let equityChartInst=null;
@@ -1723,19 +1766,31 @@ let fxClockTimer=null;
 
 function renderDashboard(){
   document.getElementById('noSetupsAlert').style.display = customSetups.length ? 'none' : 'flex';
-  const cfg = (currentAccount.widgets_config && currentAccount.widgets_config.length) ? currentAccount.widgets_config : DEFAULT_WIDGETS;
+  currentAccount.widgets_config = normalizeWidgetsConfig(
+    (currentAccount.widgets_config && currentAccount.widgets_config.length) ? currentAccount.widgets_config : DEFAULT_WIDGETS
+  );
+  const cfg = currentAccount.widgets_config;
   const wrap = document.getElementById('dashboardWidgets');
-  wrap.innerHTML = cfg.filter(w=>w.visible).map(w=>widgetShell(w.key)).join('');
+  wrap.innerHTML = cfg.filter(w=>w.visible).map(w=>widgetShell(w)).join('');
   cfg.filter(w=>w.visible).forEach(w=>mountWidget(w.key));
+  wireDashboardDrag();
+  wireDashboardResize();
 }
-function widgetShell(key){
-  const wide = WIDGET_WIDE[key] ? 'wfull' : '';
-  const label = WIDGET_LABELS[key] || key;
-  if(key==='stats') return `<div class="${wide}" id="w-stats"></div>`;
-  if(key==='equity') return `<div class="panel ${wide}"><div class="panel-title" style="margin-bottom:12px;">Equity Curve<small>Cumulative R across all logged trades</small></div><canvas id="equityChart" height="110"></canvas></div>`;
-  if(key==='score') return `<div class="panel ${wide}"><div class="panel-title" style="margin-bottom:12px;">Session Score<small>Discipline · consistency · edge</small></div><div id="scoreBody"></div></div>`;
-  if(key==='forexclock') return `<div class="panel ${wide}"><div class="panel-title" style="margin-bottom:12px;">Forex Sessions<small>Sydney · Tokyo · London · New York (IST)</small></div><div id="fxclockRoot"></div></div>`;
-  if(key==='calendar') return `<div class="panel ${wide}">
+
+function widgetShell(w){
+  const key = w.key;
+  const span = w.w || (WIDGET_WIDE[key] ? 2 : 1);
+  const styleParts = [`grid-column:span ${span}`];
+  if(w.h){ styleParts.push(`height:${w.h}px`); styleParts.push('overflow:auto'); }
+  const style = styleParts.join(';');
+  const handles = `<span class="dash-drag-handle" title="Drag to move">⠿</span><span class="dash-resize-handle" draggable="false" title="Drag to resize">⤡</span>`;
+  const chartHeight = w.h ? Math.max(90, w.h-70) : 110;
+
+  if(key==='stats') return `<div class="dash-widget" data-key="stats" draggable="true" style="${style}">${handles}<div id="w-stats"></div></div>`;
+  if(key==='equity') return `<div class="dash-widget panel" data-key="equity" draggable="true" style="${style}">${handles}<div class="panel-title" style="margin-bottom:12px;">Equity Curve<small>Cumulative R across all logged trades</small></div><div style="position:relative; height:${chartHeight}px;"><canvas id="equityChart"></canvas></div></div>`;
+  if(key==='score') return `<div class="dash-widget panel" data-key="score" draggable="true" style="${style}">${handles}<div class="panel-title" style="margin-bottom:12px;">Session Score<small>Discipline · consistency · edge</small></div><div id="scoreBody"></div></div>`;
+  if(key==='forexclock') return `<div class="dash-widget panel" data-key="forexclock" draggable="true" style="${style}">${handles}<div class="panel-title" style="margin-bottom:12px;">Forex Sessions<small>Sydney · Tokyo · London · New York (IST)</small></div><div id="fxclockRoot"></div></div>`;
+  if(key==='calendar') return `<div class="dash-widget panel" data-key="calendar" draggable="true" style="${style}">${handles}
       <div class="cal-head"><div class="panel-title" id="calTitle">This Month<small>Daily P&amp;L by day</small></div>
       <div class="cal-nav"><button id="calPrev">‹</button><button id="calNext">›</button></div></div>
       <div class="cal-grid" id="calGrid"></div>
@@ -1744,7 +1799,7 @@ function widgetShell(key){
         <span><span class="legend-dot" style="background:color-mix(in srgb, var(--red) 40%, transparent)"></span>Losing day</span>
         <span><span class="legend-dot" style="background:var(--surface-2); border:1px solid var(--border)"></span>No trades</span>
       </div></div>`;
-  if(key==='recent') return `<div class="panel ${wide}">
+  if(key==='recent') return `<div class="dash-widget panel" data-key="recent" draggable="true" style="${style}">${handles}
       <div class="panel-head"><div class="panel-title">Recent Trades<small>Last 8 entries</small></div>
       <span class="small-mute" style="cursor:pointer; color:var(--gold);" data-goto="log">View all →</span></div>
       <div class="table-scroll" id="recentTradesWrap"></div></div>`;
@@ -1757,6 +1812,113 @@ function mountWidget(key){
   if(key==='forexclock') mountForexClock();
   if(key==='calendar') renderCalendar();
   if(key==='recent') renderRecentTrades();
+}
+
+/* ---------- Drag to reorder ---------- */
+let dragWidgetKey = null;
+function wireDashboardDrag(){
+  document.querySelectorAll('.dash-widget').forEach(el=>{
+    el.addEventListener('dragstart', e=>{
+      dragWidgetKey = el.dataset.key;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try{ e.dataTransfer.setData('text/plain', dragWidgetKey); }catch(err){}
+    });
+    el.addEventListener('dragend', ()=>{
+      el.classList.remove('dragging');
+      document.querySelectorAll('.dash-widget').forEach(w=>w.classList.remove('drag-over'));
+    });
+    el.addEventListener('dragover', e=>{
+      e.preventDefault();
+      if(el.dataset.key === dragWidgetKey) return;
+      document.querySelectorAll('.dash-widget').forEach(w=>w.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    });
+    el.addEventListener('drop', async e=>{
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      const targetKey = el.dataset.key;
+      if(!dragWidgetKey || targetKey===dragWidgetKey) return;
+      await reorderWidgets(dragWidgetKey, targetKey);
+      dragWidgetKey = null;
+    });
+  });
+}
+async function reorderWidgets(draggedKey, targetKey){
+  const cfg = currentAccount.widgets_config;
+  const fromIdx = cfg.findIndex(w=>w.key===draggedKey);
+  const toIdx = cfg.findIndex(w=>w.key===targetKey);
+  if(fromIdx===-1 || toIdx===-1) return;
+  const [moved] = cfg.splice(fromIdx,1);
+  cfg.splice(toIdx,0,moved);
+  await saveWidgetsConfig();
+  renderDashboard();
+}
+
+/* ---------- Drag to resize (bottom-right corner handle) ---------- */
+let resizeState = null;
+function wireDashboardResize(){
+  document.querySelectorAll('.dash-resize-handle').forEach(handle=>{
+    handle.addEventListener('mousedown', startResize);
+    handle.addEventListener('touchstart', startResize, {passive:false});
+    handle.addEventListener('dragstart', e=>{ e.preventDefault(); e.stopPropagation(); });
+  });
+}
+function startResize(e){
+  e.preventDefault(); e.stopPropagation();
+  const widget = e.target.closest('.dash-widget');
+  if(!widget) return;
+  const key = widget.dataset.key;
+  const rect = widget.getBoundingClientRect();
+  const containerRect = document.getElementById('dashboardWidgets').getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  resizeState = {
+    key, widget,
+    startX: clientX, startY: clientY,
+    startW: rect.width, startH: rect.height,
+    containerWidth: containerRect.width,
+    finalSpan: null, finalH: null,
+  };
+  document.addEventListener('mousemove', doResize);
+  document.addEventListener('mouseup', endResize);
+  document.addEventListener('touchmove', doResize, {passive:false});
+  document.addEventListener('touchend', endResize);
+}
+function doResize(e){
+  if(!resizeState) return;
+  e.preventDefault();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const dx = clientX - resizeState.startX;
+  const dy = clientY - resizeState.startY;
+  const newW = Math.max(200, resizeState.startW + dx);
+  const newH = Math.max(140, resizeState.startH + dy);
+  const halfWidth = resizeState.containerWidth/2;
+  const span = newW > halfWidth*1.15 ? 2 : 1;
+  resizeState.widget.style.gridColumn = 'span '+span;
+  resizeState.widget.style.height = newH+'px';
+  resizeState.widget.style.overflow = 'auto';
+  resizeState.finalSpan = span;
+  resizeState.finalH = newH;
+}
+async function endResize(){
+  if(!resizeState) return;
+  const {key, finalSpan, finalH} = resizeState;
+  document.removeEventListener('mousemove', doResize);
+  document.removeEventListener('mouseup', endResize);
+  document.removeEventListener('touchmove', doResize);
+  document.removeEventListener('touchend', endResize);
+  resizeState = null;
+  if(!finalSpan && !finalH) return;
+  const cfg = currentAccount.widgets_config;
+  const w = cfg.find(x=>x.key===key);
+  if(w){
+    if(finalSpan) w.w = finalSpan;
+    if(finalH) w.h = finalH;
+    await saveWidgetsConfig();
+  }
+  renderDashboard();
 }
 
 function renderStatsWidget(){
@@ -1794,6 +1956,7 @@ function renderEquityChart(){
     }]},
     options:{
       responsive:true,
+      maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       scales:{ x:{display:false}, y:{grid:{color:styles.getPropertyValue('--border').trim()}, ticks:{color:styles.getPropertyValue('--text-mute').trim(), font:{family:'IBM Plex Mono', size:10}}} }
     }
