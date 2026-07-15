@@ -677,6 +677,11 @@ tbody tr:hover{background:var(--surface-2);}
             <div class="setup-radios" id="setupRadios"></div>
           </div>
 
+          <div class="field">
+            <label>Trading Session</label>
+            <div class="setup-radios" id="sessionRadios"></div>
+          </div>
+
           <div class="grid-3">
             <div class="field">
               <label>Direction</label>
@@ -776,6 +781,7 @@ tbody tr:hover{background:var(--surface-2);}
     <div class="view" id="view-log">
       <div class="filters">
         <select id="filterSetup"><option value="">All Setups</option></select>
+        <select id="filterSession"><option value="">All Sessions</option></select>
         <select id="filterResult">
           <option value="">All Results</option>
           <option value="Win">Win</option>
@@ -889,6 +895,16 @@ tbody tr:hover{background:var(--surface-2);}
       </div>
 
       <div class="panel form-panel">
+        <div class="panel-title" style="margin-bottom:10px;">Trading Sessions <small style="font-weight:400; color:var(--text-mute);">for the active account</small></div>
+        <p class="small-mute" style="margin-bottom:8px;">Starts with the four major forex sessions (Sydney, Tokyo, London, New York) — add your own on top, e.g. "London/NY Overlap" or "Asian Range".</p>
+        <div class="field" style="display:flex; gap:8px;">
+          <input type="text" id="newSessionName" placeholder="e.g. London/NY Overlap">
+          <button class="btn btn-ghost btn-icon" id="addSessionBtn">Add</button>
+        </div>
+        <div id="customSessionsList" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="panel form-panel">
         <div class="panel-title" style="margin-bottom:10px;">Risk/Reward Tag</div>
         <p class="small-mute" style="margin-bottom:8px;">The Risk/Reward tag is auto-calculated from Entry, Stop Loss and Target on each trade, shown like a setup tag.</p>
         <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
@@ -995,6 +1011,23 @@ tbody tr:hover{background:var(--surface-2);}
       alter table goldbook_accounts add column if not exists show_rr_tag boolean default true;
 
       (trade_time is reused as the opening time — no rename needed.)
+
+   6. TRADING SESSION TAG — run this once for the new Session field
+      (works just like the Setup tag: pick from the four major forex
+      sessions, or add your own custom ones in Settings):
+
+      alter table goldbook_trades add column if not exists session text;
+
+      create table if not exists goldbook_sessions (
+        id uuid primary key default gen_random_uuid(),
+        user_id uuid not null references auth.users(id) on delete cascade,
+        account_id uuid not null references goldbook_accounts(id) on delete cascade,
+        name text not null,
+        created_at timestamptz not null default now()
+      );
+      alter table goldbook_sessions enable row level security;
+      create policy "own sessions" on goldbook_sessions
+        for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
    4. AUTH — GoldBook uses username + seed phrase instead of email.
       Under Authentication -> Providers -> Email in your Supabase
       dashboard, make sure "Confirm email" is turned OFF (accounts
@@ -1041,6 +1074,7 @@ const WIDGET_WIDE = {stats:true, equity:true, calendar:true, recent:true, score:
 let trades = [];
 let notes = [];
 let customSetups = [];
+let customSessions = [];
 let checklist = [];
 let accounts = [];
 let currentUser = null;
@@ -1049,7 +1083,14 @@ let prefs = {display_name:'', theme:'dark-gold'};
 let accountModalMode = 'add'; // 'add' | 'edit' | 'first'
 let editingAccountId = null;
 
+// The four major forex trading sessions, per Babypips' School of
+// Pipsology "Forex Market Hours" lesson. Seeded automatically for
+// every account the first time it loads; users can add their own
+// on top (e.g. "London/NY Overlap") from Settings.
+const DEFAULT_SESSIONS = ['Sydney','Tokyo','London','New York'];
+
 function allSetups(){ return customSetups.map(s=>s.name); }
+function allSessions(){ return customSessions.map(s=>s.name); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 /* ============================================================
@@ -1328,7 +1369,7 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   if(sb) await sb.auth.signOut();
   stopForexClock();
   currentUser=null; currentAccount=null;
-  trades=[]; notes=[]; customSetups=[]; checklist=[]; accounts=[];
+  trades=[]; notes=[]; customSetups=[]; customSessions=[]; checklist=[]; accounts=[];
   appRoot.classList.remove('show');
   authScreen.style.display = 'flex';
   loginForm.reset();
@@ -1501,7 +1542,7 @@ async function saveWidgetsConfig(){
 ============================================================ */
 function dbToTrade(r){
   return {
-    id:r.id, date:r.trade_date, time_open:r.trade_time, time_close:r.trade_time_close, setup:r.setup, direction:r.direction,
+    id:r.id, date:r.trade_date, time_open:r.trade_time, time_close:r.trade_time_close, setup:r.setup, session:r.session, direction:r.direction,
     symbol:r.symbol, entry:r.entry, sl:r.sl, tp:r.tp, entrynotes:r.entry_notes, result:r.result,
     pnlr:r.pnlr, pnlamount:r.pnl_amount, rr_ratio:r.rr_ratio, emotion:r.emotion, followed:r.followed, notes:r.notes,
   };
@@ -1511,16 +1552,30 @@ function dbToNote(r){ return {id:r.id, date:r.note_date, text:r.note_text}; }
 async function loadAccountData(){
   await ensureWidgetsConfig();
   const accId = currentAccount.id;
-  const [tRes, nRes, cRes, sRes] = await Promise.all([
+  const [tRes, nRes, cRes, sRes, seRes] = await Promise.all([
     sb.from('goldbook_trades').select('*').eq('account_id', accId).order('trade_date', {ascending:false}),
     sb.from('goldbook_notes').select('*').eq('account_id', accId).order('created_at', {ascending:false}),
     sb.from('goldbook_checklist').select('*').eq('account_id', accId).order('sort_order', {ascending:true}),
     sb.from('goldbook_setups').select('*').eq('account_id', accId).order('name', {ascending:true}),
+    sb.from('goldbook_sessions').select('*').eq('account_id', accId).order('name', {ascending:true}),
   ]);
   trades = (tRes.data||[]).map(dbToTrade);
   notes = (nRes.data||[]).map(dbToNote);
   checklist = (cRes.data||[]).map(r=>({id:r.id, text:r.item_text, done:r.done, sort_order:r.sort_order}));
   customSetups = sRes.data || [];
+  customSessions = seRes.data || [];
+  await ensureDefaultSessions();
+}
+
+async function ensureDefaultSessions(){
+  // First time this account is opened with no sessions yet, seed the
+  // four major forex sessions so the picker isn't empty on day one.
+  if(customSessions.length) return;
+  try{
+    const rows = DEFAULT_SESSIONS.map(name=>({user_id:currentUser.id, account_id:currentAccount.id, name}));
+    const { data, error } = await sb.from('goldbook_sessions').insert(rows).select();
+    if(!error && data) customSessions = data;
+  } catch(e){ /* non-fatal — user can still add sessions manually */ }
 }
 
 /* ============================================================
@@ -1961,6 +2016,7 @@ function tradesTable(list, withDelete){
     <tr ${withDelete?`class="trade-row" data-open="${t.id}" style="cursor:pointer;"`:''}>
       <td>${fmtDate(t.date)}</td>
       <td><span class="tag setup">${escapeHtml(t.setup||'')}</span></td>
+      <td>${t.session?`<span class="tag">${escapeHtml(t.session)}</span>`:'–'}</td>
       <td>${escapeHtml(t.symbol||'—')}</td>
       <td>${escapeHtml(t.direction||'')}</td>
       <td style="font-family:var(--mono);">${t.entry ?? '—'}</td>
@@ -1972,7 +2028,7 @@ function tradesTable(list, withDelete){
       ${withDelete?`<td class="row-del" data-del="${t.id}">✕</td>`:''}
     </tr>`).join('');
   return `<table>
-    <thead><tr><th>Date</th><th>Setup</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Result</th><th>P&amp;L</th>${showRR?'<th>R:R</th>':''}<th>Emotion</th>${withDelete?'<th>Balance</th>':''}${withDelete?'<th></th>':''}</tr></thead>
+    <thead><tr><th>Date</th><th>Setup</th><th>Session</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Result</th><th>P&amp;L</th>${showRR?'<th>R:R</th>':''}<th>Emotion</th>${withDelete?'<th>Balance</th>':''}${withDelete?'<th></th>':''}</tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
@@ -1994,6 +2050,7 @@ function renderAddTrade(){
   document.getElementById('tradeForm').style.opacity = blocked ? 0.45 : 1;
   document.getElementById('tradeForm').style.pointerEvents = blocked ? 'none' : 'auto';
   renderSetupRadios();
+  renderSessionRadios();
   document.getElementById('f_date').valueAsDate = new Date();
 }
 function renderSetupRadios(){
@@ -2003,14 +2060,37 @@ function renderSetupRadios(){
       <input type="radio" name="setup" value="${escapeHtml(s)}" ${i===0?'checked':''}>
       ${escapeHtml(s)}
     </label>`).join('');
-  document.querySelectorAll('.setup-radio').forEach(el=>{
+  document.querySelectorAll('#setupRadios .setup-radio').forEach(el=>{
     el.addEventListener('click', ()=>{
-      document.querySelectorAll('.setup-radio').forEach(e=>e.classList.remove('checked'));
+      document.querySelectorAll('#setupRadios .setup-radio').forEach(e=>e.classList.remove('checked'));
       el.classList.add('checked');
       el.querySelector('input').checked = true;
     });
   });
-  const first = document.querySelector('.setup-radio');
+  const first = document.querySelector('#setupRadios .setup-radio');
+  if(first) first.classList.add('checked');
+}
+function renderSessionRadios(){
+  const wrap = document.getElementById('sessionRadios');
+  if(!wrap) return;
+  const sessions = allSessions();
+  if(!sessions.length){
+    wrap.innerHTML = `<div class="small-mute">No sessions yet — add one in Settings.</div>`;
+    return;
+  }
+  wrap.innerHTML = sessions.map((s,i)=>`
+    <label class="setup-radio" data-name="${escapeHtml(s)}">
+      <input type="radio" name="session" value="${escapeHtml(s)}" ${i===0?'checked':''}>
+      ${escapeHtml(s)}
+    </label>`).join('');
+  document.querySelectorAll('#sessionRadios .setup-radio').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      document.querySelectorAll('#sessionRadios .setup-radio').forEach(e=>e.classList.remove('checked'));
+      el.classList.add('checked');
+      el.querySelector('input').checked = true;
+    });
+  });
+  const first = document.querySelector('#sessionRadios .setup-radio');
   if(first) first.classList.add('checked');
 }
 
@@ -2038,6 +2118,7 @@ document.getElementById('tradeForm').addEventListener('submit', async e=>{
   e.preventDefault();
   if(!customSetups.length){ alert('Add a setup in Settings first.'); return; }
   const setupEl = document.querySelector('input[name=setup]:checked');
+  const sessionEl = document.querySelector('input[name=session]:checked');
   const emoEl = document.querySelector('.emo-chip.checked');
   const submitBtn = e.target.querySelector('button[type=submit]');
   submitBtn.disabled = true; submitBtn.textContent = 'Saving…';
@@ -2051,6 +2132,7 @@ document.getElementById('tradeForm').addEventListener('submit', async e=>{
     trade_time: document.getElementById('f_time_open').value || null,
     trade_time_close: document.getElementById('f_time_close').value || null,
     setup: setupEl ? setupEl.value : allSetups()[0],
+    session: sessionEl ? sessionEl.value : (allSessions()[0] || null),
     direction: document.getElementById('f_direction').value,
     symbol: document.getElementById('f_symbol').value || null,
     entry: entryVal || null,
@@ -2084,13 +2166,20 @@ function populateFilterSetups(){
   const sel = document.getElementById('filterSetup');
   sel.innerHTML = '<option value="">All Setups</option>' + allSetups().map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
 }
-function renderLog(){ populateFilterSetups(); applyLogFilters(); }
+function populateFilterSessions(){
+  const sel = document.getElementById('filterSession');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">All Sessions</option>' + allSessions().map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+}
+function renderLog(){ populateFilterSetups(); populateFilterSessions(); applyLogFilters(); }
 function applyLogFilters(){
   const setup = document.getElementById('filterSetup').value;
+  const session = document.getElementById('filterSession') ? document.getElementById('filterSession').value : '';
   const result = document.getElementById('filterResult').value;
   const search = document.getElementById('filterSearch').value.toLowerCase();
   let list = [...trades].sort((a,b)=>new Date(b.date)-new Date(a.date));
   if(setup) list = list.filter(t=>t.setup===setup);
+  if(session) list = list.filter(t=>t.session===session);
   if(result) list = list.filter(t=>t.result===result);
   if(search) list = list.filter(t=>(t.notes||'').toLowerCase().includes(search));
   document.getElementById('logTableWrap').innerHTML = tradesTable(list, true);
@@ -2111,10 +2200,11 @@ function applyLogFilters(){
     });
   });
 }
-['filterSetup','filterResult'].forEach(id=>document.getElementById(id).addEventListener('change', applyLogFilters));
+['filterSetup','filterSession','filterResult'].forEach(id=>document.getElementById(id).addEventListener('change', applyLogFilters));
 document.getElementById('filterSearch').addEventListener('input', applyLogFilters);
 document.getElementById('clearFilters').addEventListener('click', ()=>{
   document.getElementById('filterSetup').value='';
+  document.getElementById('filterSession').value='';
   document.getElementById('filterResult').value='';
   document.getElementById('filterSearch').value='';
   applyLogFilters();
@@ -2144,6 +2234,7 @@ function renderTradeModalView(t){
     ['Trade Opening Time', t.time_open || '—'],
     ['Trade Closing Time', t.time_close || '—'],
     ['Setup', t.setup || '—'],
+    ['Trading Session', t.session || '—'],
     ['Direction', t.direction || '—'],
     ['Symbol / Pair', t.symbol || '—'],
     ['Entry Price', t.entry ?? '—'],
@@ -2174,6 +2265,9 @@ function renderTradeEditForm(t){
     </div>
     <div class="field"><label>Setup</label>
       <select id="em_setup">${allSetups().map(s=>`<option value="${escapeHtml(s)}" ${t.setup===s?'selected':''}>${escapeHtml(s)}</option>`).join('')}</select>
+    </div>
+    <div class="field"><label>Trading Session</label>
+      <select id="em_session">${allSessions().map(s=>`<option value="${escapeHtml(s)}" ${t.session===s?'selected':''}>${escapeHtml(s)}</option>`).join('')}</select>
     </div>
     <div class="grid-3">
       <div class="field"><label>Direction</label>
@@ -2238,6 +2332,7 @@ document.getElementById('tradeModalSaveBtn').addEventListener('click', async ()=
     trade_time: document.getElementById('em_time_open').value || null,
     trade_time_close: document.getElementById('em_time_close').value || null,
     setup: document.getElementById('em_setup').value,
+    session: document.getElementById('em_session') ? document.getElementById('em_session').value : null,
     direction: document.getElementById('em_direction').value,
     symbol: document.getElementById('em_symbol').value || null,
     entry: entry || null,
@@ -2419,6 +2514,7 @@ function renderSettings(){
   renderThemeRow();
   renderAccountsList();
   renderSetupsList();
+  renderSessionsList();
   renderWidgetManager();
   document.getElementById('settingsStartBalance').value = startingBalance() || '';
   document.getElementById('settingsCurrentBalance').textContent = currentBalance().toFixed(2) + ' ' + (currentAccount.base_currency||'USD');
@@ -2525,6 +2621,38 @@ document.getElementById('addSetupBtn').addEventListener('click', async ()=>{
   renderSetupsList();
 });
 
+function renderSessionsList(){
+  const wrap = document.getElementById('customSessionsList');
+  if(!wrap) return;
+  wrap.innerHTML = customSessions.length ? customSessions.map(s=>`
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px;">
+      <span>${escapeHtml(s.name)}</span><span class="row-del" data-rmsession="${s.id}">✕</span>
+    </div>`).join('') : `<div class="small-mute">No sessions yet.</div>`;
+  document.querySelectorAll('[data-rmsession]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const id = el.dataset.rmsession;
+      const { error } = await sb.from('goldbook_sessions').delete().eq('id', id);
+      if(error){ alert('Could not remove: ' + error.message); return; }
+      customSessions = customSessions.filter(s=>String(s.id)!==String(id));
+      renderSessionsList();
+    });
+  });
+}
+const addSessionBtnEl = document.getElementById('addSessionBtn');
+if(addSessionBtnEl){
+  addSessionBtnEl.addEventListener('click', async ()=>{
+    const inp = document.getElementById('newSessionName');
+    const val = inp.value.trim();
+    if(!val) return;
+    const { data, error } = await sb.from('goldbook_sessions')
+      .insert({user_id:currentUser.id, account_id:currentAccount.id, name:val}).select().single();
+    if(error){ alert('Could not add session: ' + error.message); return; }
+    customSessions.push(data);
+    inp.value='';
+    renderSessionsList();
+  });
+}
+
 function renderWidgetManager(){
   const cfg = (currentAccount.widgets_config && currentAccount.widgets_config.length) ? currentAccount.widgets_config : DEFAULT_WIDGETS.slice();
   document.getElementById('widgetManageList').innerHTML = cfg.map((w,i)=>`
@@ -2569,13 +2697,13 @@ function renderWidgetManager(){
    Export / Import (JSON + CSV)
 ============================================================ */
 function tradesToCSV(list){
-  const headers = ['Date','TimeOpen','TimeClose','Setup','Symbol','Direction','Entry','SL','TP','EntryNotes','Result','PnL_R','PnL_Amount','RR_Ratio','Emotion','FollowedPlan','Notes'];
+  const headers = ['Date','TimeOpen','TimeClose','Setup','Session','Symbol','Direction','Entry','SL','TP','EntryNotes','Result','PnL_R','PnL_Amount','RR_Ratio','Emotion','FollowedPlan','Notes'];
   const escCsv = v => {
     if(v===null||v===undefined) return '';
     const s = String(v);
     return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
   };
-  const rows = list.map(t=>[t.date,t.time_open||'',t.time_close||'',t.setup||'',t.symbol||'',t.direction||'',t.entry??'',t.sl??'',t.tp??'',t.entrynotes||'',t.result||'',t.pnlr??'',t.pnlamount??'',t.rr_ratio||rrRatioValue(t)||'',t.emotion||'',t.followed||'',t.notes||''].map(escCsv).join(','));
+  const rows = list.map(t=>[t.date,t.time_open||'',t.time_close||'',t.setup||'',t.session||'',t.symbol||'',t.direction||'',t.entry??'',t.sl??'',t.tp??'',t.entrynotes||'',t.result||'',t.pnlr??'',t.pnlamount??'',t.rr_ratio||rrRatioValue(t)||'',t.emotion||'',t.followed||'',t.notes||''].map(escCsv).join(','));
   return headers.join(',') + '\n' + rows.join('\n');
 }
 function downloadBlob(content, filename, type){
@@ -2586,7 +2714,7 @@ function downloadBlob(content, filename, type){
   URL.revokeObjectURL(url);
 }
 document.getElementById('exportJsonBtn').addEventListener('click', ()=>{
-  downloadBlob(JSON.stringify({account:currentAccount.account_name, trades, notes, customSetups, checklist}, null, 2),
+  downloadBlob(JSON.stringify({account:currentAccount.account_name, trades, notes, customSetups, customSessions, checklist}, null, 2),
     `goldbook-${currentAccount.account_number}-${new Date().toISOString().slice(0,10)}.json`, 'application/json');
 });
 document.getElementById('exportCsvBtn').addEventListener('click', ()=>{
@@ -2601,7 +2729,7 @@ document.getElementById('importFile').addEventListener('change', async e=>{
       const data = JSON.parse(ev.target.result);
       if(data.trades && data.trades.length){
         const rows = data.trades.map(t=>({
-          user_id:currentUser.id, account_id:currentAccount.id, trade_date:t.date, trade_time:t.time_open||t.time||null, trade_time_close:t.time_close||null, setup:t.setup,
+          user_id:currentUser.id, account_id:currentAccount.id, trade_date:t.date, trade_time:t.time_open||t.time||null, trade_time_close:t.time_close||null, setup:t.setup, session:t.session||null,
           direction:t.direction, symbol:t.symbol||null, entry:t.entry||null, sl:t.sl||null,
           tp:t.tp||null, entry_notes:t.entrynotes||null, result:t.result, pnlr:t.pnlr||null, pnl_amount:t.pnlamount||null, rr_ratio:t.rr_ratio||null, emotion:t.emotion, followed:t.followed, notes:t.notes,
         }));
@@ -2616,6 +2744,12 @@ document.getElementById('importFile').addEventListener('change', async e=>{
         const names = data.customSetups.map(s=> typeof s==='string' ? s : s.name);
         await sb.from('goldbook_setups').insert(names.map(name=>({user_id:currentUser.id, account_id:currentAccount.id, name})));
       }
+      if(data.customSessions && data.customSessions.length){
+        const sessionNames = data.customSessions.map(s=> typeof s==='string' ? s : s.name);
+        const existing = new Set(allSessions());
+        const toAdd = sessionNames.filter(n=>!existing.has(n));
+        if(toAdd.length) await sb.from('goldbook_sessions').insert(toAdd.map(name=>({user_id:currentUser.id, account_id:currentAccount.id, name})));
+      }
       await loadAccountData();
       renderSettings();
       alert('Import complete.');
@@ -2625,15 +2759,16 @@ document.getElementById('importFile').addEventListener('change', async e=>{
   e.target.value = '';
 });
 document.getElementById('wipeBtn').addEventListener('click', async ()=>{
-  if(!confirm('This will permanently delete all trades, notes, and setups for this account. Continue?')) return;
+  if(!confirm('This will permanently delete all trades, notes, setups and sessions for this account. Continue?')) return;
   const accId = currentAccount.id;
   await Promise.all([
     sb.from('goldbook_trades').delete().eq('account_id', accId),
     sb.from('goldbook_notes').delete().eq('account_id', accId),
     sb.from('goldbook_setups').delete().eq('account_id', accId),
+    sb.from('goldbook_sessions').delete().eq('account_id', accId),
     sb.from('goldbook_checklist').delete().eq('account_id', accId),
   ]);
-  trades=[]; notes=[]; customSetups=[]; checklist=[];
+  trades=[]; notes=[]; customSetups=[]; customSessions=[]; checklist=[];
   renderSettings();
 });
 
