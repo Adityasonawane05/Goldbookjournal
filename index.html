@@ -167,6 +167,14 @@ button, .nav-item, .setup-radio, .emo-chip, .cal-cell, .auth-tab, select, .theme
 .nav-item.active{background:color-mix(in srgb, var(--gold) 9%, transparent); color:var(--gold); border-color:color-mix(in srgb, var(--gold) 18%, transparent);}
 .nav-item.active svg{opacity:1;}
 .nav-group-label{font-size:10px; text-transform:uppercase; letter-spacing:1.3px; color:var(--text-faint); padding:14px 12px 6px;}
+.sidebar-watermark{padding:10px 12px 4px;}
+.sidebar-watermark a{
+  display:flex; align-items:center; gap:7px; text-decoration:none;
+  color:var(--text-faint); font-size:10.5px; letter-spacing:.2px;
+  padding:7px 8px; border-radius:7px; transition:color .15s, background .15s;
+}
+.sidebar-watermark a:hover{color:var(--gold); background:var(--surface-2);}
+.sidebar-watermark svg{width:13px; height:13px; flex-shrink:0; opacity:.85;}
 
 .sidebar-foot{padding:14px 18px; border-top:1px solid var(--border);}
 .session-pill{
@@ -337,6 +345,17 @@ tbody tr:hover{background:var(--surface-2);}
 .checklist-item{display:flex; align-items:center; gap:9px; padding:9px 0; font-size:13px; color:var(--text-mute); border-bottom:1px dashed var(--border);}
 .checklist-item input{width:auto; min-height:unset;}
 .checklist-item.done{color:var(--text-faint); text-decoration:line-through;}
+.checklist-drag{cursor:grab; color:var(--text-faint); font-size:13px; line-height:1; padding:2px 2px; user-select:none; flex-shrink:0;}
+.checklist-drag:active{cursor:grabbing;}
+.checklist-item.dragging{opacity:.4;}
+.checklist-item.drag-over{border-top:2px solid var(--gold);}
+.note-entry .note-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.note-actions{display:flex; gap:6px;}
+.note-actions .row-del, .note-actions .note-edit-link{font-size:11px; cursor:pointer; color:var(--text-faint); padding:2px 4px;}
+.note-actions .note-edit-link:hover{color:var(--gold);}
+.note-actions .row-del:hover{color:var(--red);}
+.note-edit-box textarea{margin-top:8px;}
+.note-edit-actions{display:flex; gap:8px; margin-top:8px;}
 .checklist-add{display:flex; gap:8px; margin-top:10px;}
 
 /* modal */
@@ -615,6 +634,12 @@ tbody tr:hover{background:var(--surface-2);}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings
       </div>
+      <div class="sidebar-watermark">
+        <a href="https://www.instagram.com/adityaatrades?igsh=bzkxeTRybXYzZzE0" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+          <span>Trade Journal by Aditya</span>
+        </a>
+      </div>
     </div>
     <div class="sidebar-foot">
       <div class="user-pill">
@@ -734,7 +759,7 @@ tbody tr:hover{background:var(--surface-2);}
               </select>
             </div>
             <div class="field">
-              <label>P&amp;L (in R)</label>
+              <label>P&amp;L (in R/R)</label>
               <input type="number" step="any" id="f_pnlr" placeholder="e.g. 2 or -1">
             </div>
             <div class="field">
@@ -2243,7 +2268,7 @@ function renderTradeModalView(t){
     ['Entry Level Notes', t.entrynotes || '—'],
     ['Risk : Reward', rr || '—'],
     ['Result', t.result || '—'],
-    ['P&L (in R)', t.pnlr!==null&&t.pnlr!==undefined&&t.pnlr!=='' ? t.pnlr+'R' : '—'],
+    ['P&L (in R/R)', t.pnlr!==null&&t.pnlr!==undefined&&t.pnlr!=='' ? t.pnlr+'R' : '—'],
     ['P&L (Account Currency)', t.pnlamount!==null&&t.pnlamount!==undefined&&t.pnlamount!=='' ? t.pnlamount : '—'],
     ['Emotional State', t.emotion || '—'],
     ['Followed Plan', t.followed || '—'],
@@ -2285,7 +2310,7 @@ function renderTradeEditForm(t){
       <div class="field"><label>Result</label>
         <select id="em_result">${['Win','Loss','Breakeven'].map(r=>`<option ${t.result===r?'selected':''}>${r}</option>`).join('')}</select>
       </div>
-      <div class="field"><label>P&amp;L (in R)</label><input type="number" step="any" id="em_pnlr" value="${t.pnlr??''}"></div>
+      <div class="field"><label>P&amp;L (in R/R)</label><input type="number" step="any" id="em_pnlr" value="${t.pnlr??''}"></div>
       <div class="field"><label>P&amp;L (Account Currency)</label><input type="number" step="any" id="em_pnlamount" value="${t.pnlamount??''}"></div>
     </div>
     <div class="grid-2">
@@ -2446,9 +2471,13 @@ function renderNotebook(){
   renderChecklist();
   renderNotesList();
 }
+
+let dragChecklistId = null;
+
 function renderChecklist(){
   document.getElementById('checklistWrap').innerHTML = checklist.map(c=>`
-    <div class="checklist-item ${c.done?'done':''}" data-id="${c.id}">
+    <div class="checklist-item ${c.done?'done':''}" data-id="${c.id}" draggable="true">
+      <span class="checklist-drag" title="Drag to reorder">⠿</span>
       <input type="checkbox" ${c.done?'checked':''}>
       <span style="flex:1;">${escapeHtml(c.text)}</span>
       <span class="row-del" data-delchk="${c.id}">✕</span>
@@ -2470,6 +2499,49 @@ function renderChecklist(){
       renderChecklist();
     });
   });
+  wireChecklistDragAndDrop();
+}
+function wireChecklistDragAndDrop(){
+  const items = document.querySelectorAll('.checklist-item');
+  items.forEach(el=>{
+    el.addEventListener('dragstart', e=>{
+      dragChecklistId = el.dataset.id;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    el.addEventListener('dragend', ()=>{
+      el.classList.remove('dragging');
+      document.querySelectorAll('.checklist-item').forEach(x=>x.classList.remove('drag-over'));
+    });
+    el.addEventListener('dragover', e=>{
+      e.preventDefault();
+      if(el.dataset.id === dragChecklistId) return;
+      document.querySelectorAll('.checklist-item').forEach(x=>x.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    });
+    el.addEventListener('drop', async e=>{
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      const targetId = el.dataset.id;
+      if(!dragChecklistId || targetId===dragChecklistId) return;
+      await reorderChecklist(dragChecklistId, targetId);
+      dragChecklistId = null;
+    });
+  });
+}
+async function reorderChecklist(draggedId, targetId){
+  const fromIdx = checklist.findIndex(c=>String(c.id)===String(draggedId));
+  const toIdx = checklist.findIndex(c=>String(c.id)===String(targetId));
+  if(fromIdx===-1 || toIdx===-1) return;
+  const [moved] = checklist.splice(fromIdx,1);
+  checklist.splice(toIdx,0,moved);
+  checklist.forEach((c,i)=>c.sort_order=i);
+  renderChecklist();
+  try{
+    await Promise.all(checklist.map(c=>
+      sb.from('goldbook_checklist').update({sort_order:c.sort_order}).eq('id', c.id)
+    ));
+  } catch(e){ /* order still reflected locally even if a write hiccups */ }
 }
 document.getElementById('addChecklistBtn').addEventListener('click', async ()=>{
   const inp = document.getElementById('newChecklistItem');
@@ -2496,14 +2568,72 @@ document.getElementById('saveNoteBtn').addEventListener('click', async ()=>{
   document.getElementById('note_text').value='';
   renderNotesList();
 });
+let editingNoteId = null;
 function renderNotesList(){
   const wrap = document.getElementById('notesWrap');
   if(!notes.length){ wrap.innerHTML = `<div class="empty-state"><div class="es-icon">✎</div><div class="es-title">No entries yet</div><div>Write your first session reflection.</div></div>`; return; }
-  wrap.innerHTML = notes.map(n=>`
-    <div class="note-entry">
-      <div class="note-date">${fmtDate(n.date)}</div>
+  wrap.innerHTML = notes.map(n=>{
+    if(String(n.id)===String(editingNoteId)){
+      return `
+      <div class="note-entry" data-noteid="${n.id}">
+        <div class="note-edit-box">
+          <div class="field" style="margin-bottom:8px;">
+            <label>Date</label>
+            <input type="date" class="note-edit-date" value="${n.date||''}">
+          </div>
+          <textarea class="note-edit-text" rows="5">${escapeHtml(n.text)}</textarea>
+          <div class="note-edit-actions">
+            <button class="btn btn-primary btn-icon" data-savenote="${n.id}">Save</button>
+            <button class="btn btn-ghost btn-icon" data-canceledit="${n.id}">Cancel</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="note-entry" data-noteid="${n.id}">
+      <div class="note-head">
+        <div class="note-date">${fmtDate(n.date)}</div>
+        <div class="note-actions">
+          <span class="note-edit-link" data-editnote="${n.id}">Edit</span>
+          <span class="row-del" data-delnote="${n.id}">✕</span>
+        </div>
+      </div>
       <div class="note-text">${escapeHtml(n.text)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-editnote]').forEach(el=>{
+    el.addEventListener('click', ()=>{ editingNoteId = el.dataset.editnote; renderNotesList(); });
+  });
+  document.querySelectorAll('[data-canceledit]').forEach(el=>{
+    el.addEventListener('click', ()=>{ editingNoteId = null; renderNotesList(); });
+  });
+  document.querySelectorAll('[data-delnote]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const id = el.dataset.delnote;
+      if(!confirm('Delete this journal entry?')) return;
+      const { error } = await sb.from('goldbook_notes').delete().eq('id', id);
+      if(error){ alert('Could not delete: ' + error.message); return; }
+      notes = notes.filter(n=>String(n.id)!==String(id));
+      if(String(editingNoteId)===String(id)) editingNoteId = null;
+      renderNotesList();
+    });
+  });
+  document.querySelectorAll('[data-savenote]').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const id = el.dataset.savenote;
+      const entryEl = document.querySelector(`.note-entry[data-noteid="${id}"]`);
+      const newDate = entryEl.querySelector('.note-edit-date').value;
+      const newText = entryEl.querySelector('.note-edit-text').value.trim();
+      if(!newText) { alert('Entry text cannot be empty.'); return; }
+      el.disabled = true; el.textContent = 'Saving…';
+      const { data, error } = await sb.from('goldbook_notes')
+        .update({note_date:newDate, note_text:newText}).eq('id', id).select().single();
+      if(error){ alert('Could not save changes: ' + error.message); el.disabled=false; el.textContent='Save'; return; }
+      notes = notes.map(n=>String(n.id)===String(id) ? dbToNote(data) : n);
+      editingNoteId = null;
+      renderNotesList();
+    });
+  });
 }
 
 /* ============================================================
